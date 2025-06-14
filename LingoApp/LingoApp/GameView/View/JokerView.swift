@@ -259,7 +259,7 @@ struct JokerShopView: View {
 // MARK: - Preview
 struct JokerView_Previews: PreviewProvider {
     static var previews: some View {
-        JokerCompactView(game: GameModel())
+        JokerCompactView(game: GameModel(difficulty: .medium))
             .padding()
     }
 }

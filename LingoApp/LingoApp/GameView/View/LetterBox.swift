@@ -11,17 +11,17 @@ import SwiftUI
 struct LetterBox: View {
     let letter: Character?
     let state: LetterGuessState
+    let boxSize: CGFloat // Yeni parametre
     @State private var isAnimating = false
     @State private var flipRotation: Double = 0
     
     var body: some View {
         RoundedRectangle(cornerRadius: 12)
             .fill(backgroundColor)
-            .frame(width: 60, height: 60)
+            .frame(width: boxSize, height: boxSize)
             .overlay(
                 Text(letter.map(String.init) ?? "")
-                    .font(.title2)
-                    .fontWeight(.medium)
+                    .font(.system(size: boxSize * 0.4, weight: .medium)) // Dinamik font boyutu
                     .foregroundColor(textColor)
             )
             .overlay(
@@ -160,21 +160,5 @@ struct LetterBox: View {
         default:
             return 4
         }
-    }
-}
-
-// MARK: - Preview
-struct LetterBox_Previews: PreviewProvider {
-    static var previews: some View {
-        VStack {
-            HStack {
-                LetterBox(letter: "A", state: .correct)
-                LetterBox(letter: "B", state: .wrongPosition)
-                LetterBox(letter: "C", state: .wrong)
-                LetterBox(letter: "D", state: .unused)
-                LetterBox(letter: nil, state: .unused)
-            }
-        }
-        .padding()
     }
 }

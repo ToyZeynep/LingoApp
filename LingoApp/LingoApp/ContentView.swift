@@ -8,8 +8,17 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var selectedDifficulty: DifficultyLevel? = nil
+    
     var body: some View {
-        GameView()
+        if let difficulty = selectedDifficulty {
+            GameView(difficulty: difficulty) {
+                // Geri dönüş için
+                selectedDifficulty = nil
+            }
+        } else {
+            DifficultySelectionView(selectedDifficulty: $selectedDifficulty)
+        }
     }
 }
 

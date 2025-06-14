@@ -18,18 +18,23 @@ class GameModel: ObservableObject {
     @Published var showInvalidWordAlert = false
     @Published var statistics = GameStatistics()
     @Published var jokerManager = JokerManager()
-    @Published var timeRemaining: TimeInterval = 120 // 2 dakika
+    @Published var timeRemaining: TimeInterval = 120
     @Published var isTimerActive = false
     
-    let maxGuesses = 5
-    let wordLength = 5
-    let gameDuration: TimeInterval = 120 // 2 dakika
+    var maxGuesses = 5
+    var wordLength = 5
+    var gameDuration: TimeInterval = 120
     
     private let wordManager = WordManager()
     private var audioPlayer: AVAudioPlayer?
     private var gameTimer: Timer?
     
-    init() {
+    init(difficulty: DifficultyLevel = .medium) {
+        self.maxGuesses = difficulty.maxGuesses
+        self.wordLength = difficulty.wordLength
+        self.gameDuration = TimeInterval(difficulty.time)
+        self.timeRemaining = gameDuration
+        
         loadStatistics()
         startNewGame()
     }

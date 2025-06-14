@@ -8,15 +8,22 @@
 import SwiftUI
 
 struct GameView: View {
-    @StateObject private var game = GameModel()
+    let difficulty: DifficultyLevel
+    let onBackToMenu: () -> Void
+    
+    @StateObject private var game: GameModel
     @State private var showStatistics = false
     @State private var showGameOver = false
     
+    init(difficulty: DifficultyLevel, onBackToMenu: @escaping () -> Void) {
+        self.difficulty = difficulty
+        self.onBackToMenu = onBackToMenu
+        self._game = StateObject(wrappedValue: GameModel(difficulty: difficulty))
+    }
+    
     var body: some View {
         ZStack {
-            // Modern Premium Arkaplan - Deep Blue Palette
             ZStack {
-                // Ana gradient
                 LinearGradient(
                     gradient: Gradient(colors: [
                         Color(red: 0.05, green: 0.1, blue: 0.2),
@@ -27,7 +34,6 @@ struct GameView: View {
                     endPoint: .bottomTrailing
                 )
                 
-                // Glassmorphism efektleri
                 Circle()
                     .fill(.cyan.opacity(0.08))
                     .frame(width: 200, height: 200)
@@ -51,13 +57,31 @@ struct GameView: View {
             VStack(spacing: 0) {
                 ScrollView {
                     VStack(spacing: 15) {
+                        if game.gameState == .playing {
+                            HStack {
+                                Button(action: onBackToMenu) {
+                                    HStack(spacing: 6) {
+                                        Image(systemName: "chevron.left.circle.fill")
+                                            .font(.system(size: 16))
+                                        Text("Geri")
+                                            .font(.system(size: 14, weight: .medium))
+                                    }
+                                    .foregroundColor(.cyan.opacity(0.9))
+                                }
+                                
+                                Spacer()
+                            }
+                            .padding(.horizontal)
+                            .padding(.top, 8)
+                        }
                         
                         TimerProgressView(game: game)
                             .padding(.horizontal)
-                            .padding(.top, 15)
                         
                         GameBoard(game: game)
                             .padding(.horizontal)
+                        
+                        GameStatusView(game: game)
                         
                         KeyboardView(game: game)
                             .padding(.bottom, 10)
@@ -102,11 +126,11 @@ struct TimerProgressView: View {
     
     var timeColor: Color {
         if game.timeRemaining > 60 {
-            return .cyan
+            return .red
         } else if game.timeRemaining > 30 {
             return .orange
         } else {
-            return .red
+            return .red.opacity(0.8)
         }
     }
     
@@ -154,10 +178,10 @@ struct TimerProgressView: View {
                     .fill(
                         LinearGradient(
                             colors: progressValue > 0.5 ?
-                                [.cyan, .blue] :
+                            [.red, .red.opacity(0.8)] :
                                 progressValue > 0.25 ?
-                                    [.orange, .red] :
-                                    [.red, .red.opacity(0.7)],
+                            [.orange, .red] :
+                                [.red, .red.opacity(0.6)],
                             startPoint: .leading,
                             endPoint: .trailing
                         )
@@ -183,24 +207,39 @@ struct TimerProgressView: View {
 struct GameBoard: View {
     @ObservedObject var game: GameModel
     
+    // Dinamik kutu boyutu hesapla
+    private var boxSize: CGFloat {
+        let screenWidth = UIScreen.main.bounds.width
+        let availableWidth = screenWidth - 80 // Padding için
+        let spacing = CGFloat(game.wordLength - 1) * 8 // Kutular arası boşluk
+        return min((availableWidth - spacing) / CGFloat(game.wordLength), 55)
+    }
+    
+    private var spacing: CGFloat {
+        game.wordLength > 5 ? 6 : 8
+    }
+    
     var body: some View {
         VStack(spacing: 20) {
             // Harf Kutuları
             VStack(spacing: 12) {
                 ForEach(0..<game.maxGuesses, id: \.self) { row in
-                    HStack(spacing: 8) {
+                    HStack(spacing: spacing) {
                         ForEach(0..<game.wordLength, id: \.self) { col in
                             LetterBox(
                                 letter: game.getLetterForPosition(row: row, col: col),
-                                state: game.getStateForPosition(row: row, col: col)
+                                state: game.getStateForPosition(row: row, col: col),
+                                boxSize: boxSize
                             )
                         }
                     }
                 }
             }
             
-            JokerCompactView(game: game)
-            
+            // Joker Butonları (sadece oyun sırasında)
+            if game.gameState == .playing {
+                JokerCompactView(game: game)
+            }
         }
         .padding(20)
         .background(
@@ -215,6 +254,102 @@ struct GameBoard: View {
     }
 }
 
+// MARK: - Oyun Durum Görünümü
+struct GameStatusView: View {
+    @ObservedObject var game: GameModel
+    @State private var glowAnimation = false
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            switch game.gameState {
+            case .won:
+                VStack(spacing: 15) {
+                    Text("✨")
+                        .font(.system(size: 80))
+                        .scaleEffect(glowAnimation ? 1.1 : 0.9)
+                        .animation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true), value: glowAnimation)
+                    
+                    Text("MÜKEMMEL")
+                        .font(.system(size: 32, weight: .ultraLight, design: .serif))
+                        .tracking(6)
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [.white, .yellow.opacity(0.8)],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                        )
+                    
+                    Text("\(game.guesses.count) tahmin")
+                        .font(.system(size: 18, weight: .light))
+                        .foregroundColor(.white.opacity(0.7))
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 8)
+                        .background(
+                            Capsule()
+                                .stroke(.white.opacity(0.3), lineWidth: 1)
+                                .background(
+                                    Capsule()
+                                        .fill(.ultraThinMaterial)
+                                )
+                        )
+                }
+                
+            case .lost:
+                VStack(spacing: 15) {
+                    Text("💭")
+                        .font(.system(size: 80))
+                        .scaleEffect(glowAnimation ? 1.05 : 0.95)
+                        .animation(.easeInOut(duration: 2).repeatForever(autoreverses: true), value: glowAnimation)
+                    
+                    Text("YENİDEN DENEYİN")
+                        .font(.system(size: 26, weight: .ultraLight, design: .serif))
+                        .tracking(4)
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [.white, .blue.opacity(0.8)],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                        )
+                    
+                    Text(game.targetWord)
+                        .font(.system(size: 24, weight: .light, design: .monospaced))
+                        .foregroundColor(.white)
+                        .tracking(3)
+                        .padding(.horizontal, 24)
+                        .padding(.vertical, 12)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(.black.opacity(0.4))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(.white.opacity(0.2), lineWidth: 1)
+                                )
+                        )
+                }
+                
+            case .playing:
+                EmptyView()
+            }
+        }
+        .padding(30)
+        .background(
+            RoundedRectangle(cornerRadius: 25)
+                .fill(.ultraThinMaterial)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 25)
+                        .stroke(.white.opacity(0.15), lineWidth: 1)
+                )
+                .shadow(color: .black.opacity(0.4), radius: 25, x: 0, y: 15)
+        )
+        .padding(.horizontal)
+        .onAppear {
+            glowAnimation = true
+        }
+    }
+}
+
 // MARK: - Animation Extension
 extension Animation {
     static func blink(duration: Double = 1.0) -> Animation {
@@ -225,6 +360,8 @@ extension Animation {
 // MARK: - Preview
 struct GameView_Previews: PreviewProvider {
     static var previews: some View {
-        GameView()
+        GameView(difficulty: .medium, onBackToMenu: {
+            print("Back to menu")
+        })
     }
 }
