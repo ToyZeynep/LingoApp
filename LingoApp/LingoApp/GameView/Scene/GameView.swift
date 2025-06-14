@@ -81,8 +81,6 @@ struct GameView: View {
                         GameBoard(game: game)
                             .padding(.horizontal)
                         
-                        GameStatusView(game: game)
-                        
                         KeyboardView(game: game)
                             .padding(.bottom, 10)
                     }
@@ -236,10 +234,7 @@ struct GameBoard: View {
                 }
             }
             
-            // Joker Butonları (sadece oyun sırasında)
-            if game.gameState == .playing {
                 JokerCompactView(game: game)
-            }
         }
         .padding(20)
         .background(
@@ -251,102 +246,6 @@ struct GameBoard: View {
                 )
                 .shadow(color: .black.opacity(0.3), radius: 20, x: 0, y: 10)
         )
-    }
-}
-
-// MARK: - Oyun Durum Görünümü
-struct GameStatusView: View {
-    @ObservedObject var game: GameModel
-    @State private var glowAnimation = false
-    
-    var body: some View {
-        VStack(spacing: 20) {
-            switch game.gameState {
-            case .won:
-                VStack(spacing: 15) {
-                    Text("✨")
-                        .font(.system(size: 80))
-                        .scaleEffect(glowAnimation ? 1.1 : 0.9)
-                        .animation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true), value: glowAnimation)
-                    
-                    Text("MÜKEMMEL")
-                        .font(.system(size: 32, weight: .ultraLight, design: .serif))
-                        .tracking(6)
-                        .foregroundStyle(
-                            LinearGradient(
-                                colors: [.white, .yellow.opacity(0.8)],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            )
-                        )
-                    
-                    Text("\(game.guesses.count) tahmin")
-                        .font(.system(size: 18, weight: .light))
-                        .foregroundColor(.white.opacity(0.7))
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 8)
-                        .background(
-                            Capsule()
-                                .stroke(.white.opacity(0.3), lineWidth: 1)
-                                .background(
-                                    Capsule()
-                                        .fill(.ultraThinMaterial)
-                                )
-                        )
-                }
-                
-            case .lost:
-                VStack(spacing: 15) {
-                    Text("💭")
-                        .font(.system(size: 80))
-                        .scaleEffect(glowAnimation ? 1.05 : 0.95)
-                        .animation(.easeInOut(duration: 2).repeatForever(autoreverses: true), value: glowAnimation)
-                    
-                    Text("YENİDEN DENEYİN")
-                        .font(.system(size: 26, weight: .ultraLight, design: .serif))
-                        .tracking(4)
-                        .foregroundStyle(
-                            LinearGradient(
-                                colors: [.white, .blue.opacity(0.8)],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            )
-                        )
-                    
-                    Text(game.targetWord)
-                        .font(.system(size: 24, weight: .light, design: .monospaced))
-                        .foregroundColor(.white)
-                        .tracking(3)
-                        .padding(.horizontal, 24)
-                        .padding(.vertical, 12)
-                        .background(
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(.black.opacity(0.4))
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 12)
-                                        .stroke(.white.opacity(0.2), lineWidth: 1)
-                                )
-                        )
-                }
-                
-            case .playing:
-                EmptyView()
-            }
-        }
-        .padding(30)
-        .background(
-            RoundedRectangle(cornerRadius: 25)
-                .fill(.ultraThinMaterial)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 25)
-                        .stroke(.white.opacity(0.15), lineWidth: 1)
-                )
-                .shadow(color: .black.opacity(0.4), radius: 25, x: 0, y: 15)
-        )
-        .padding(.horizontal)
-        .onAppear {
-            glowAnimation = true
-        }
     }
 }
 
