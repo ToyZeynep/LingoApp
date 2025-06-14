@@ -9,7 +9,6 @@
 import SwiftUI
 import AVFoundation
 
-// MARK: - Kompakt Joker View (Letter Box altında)
 struct JokerCompactView: View {
     @ObservedObject var game: GameModel
     @State private var showJokerShop = false
@@ -66,11 +65,17 @@ struct JokerCompactView: View {
         let success = game.jokerManager.useJoker(type, targetWord: game.targetWord, gameModel: game)
         
         if success {
-            AudioServicesPlaySystemSound(1057)
-            let impactFeedback = UIImpactFeedbackGenerator(style: .light)
-            impactFeedback.impactOccurred()
+            // Ses ayarını kontrol et
+            if game.soundEnabled {
+                AudioServicesPlaySystemSound(1057)
+                let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                impactFeedback.impactOccurred()
+            }
         } else {
-            AudioServicesPlaySystemSound(1053)
+            // Ses ayarını kontrol et
+            if game.soundEnabled {
+                AudioServicesPlaySystemSound(1053)
+            }
         }
     }
 }

@@ -5,7 +5,6 @@
 //  Created by Zeynep Toy on 14.06.2025.
 //
 
-
 import Foundation
 import SwiftUI
 import AVFoundation
@@ -16,10 +15,10 @@ class GameModel: ObservableObject {
     @Published var gameState: GameState = .playing
     @Published var targetWord = ""
     @Published var showInvalidWordAlert = false
-    @Published var statistics = GameStatistics()
     @Published var jokerManager = JokerManager()
     @Published var timeRemaining: TimeInterval = 120
     @Published var isTimerActive = false
+    @Published var soundEnabled = true // Ses ayarı eklendi
     
     var maxGuesses = 5
     var wordLength = 5
@@ -28,6 +27,7 @@ class GameModel: ObservableObject {
     private let wordManager = WordManager()
     private var audioPlayer: AVAudioPlayer?
     private var gameTimer: Timer?
+    private let statisticsManager = StatisticsManager.shared // Global manager kullan
     
     init(difficulty: DifficultyLevel = .medium) {
         self.maxGuesses = difficulty.maxGuesses
@@ -35,13 +35,32 @@ class GameModel: ObservableObject {
         self.gameDuration = TimeInterval(difficulty.time)
         self.timeRemaining = gameDuration
         
-        loadStatistics()
+        loadSoundSettings() // Ses ayarlarını yükle
         startNewGame()
+    }
+    
+    // MARK: - Ses Ayarları
+    private func loadSoundSettings() {
+        soundEnabled = UserDefaults.standard.bool(forKey: "SoundEnabled")
+        // İlk açılışta default olarak true olsun
+        if UserDefaults.standard.object(forKey: "SoundEnabled") == nil {
+            soundEnabled = true
+            saveSoundSettings()
+        }
+    }
+    
+    private func saveSoundSettings() {
+        UserDefaults.standard.set(soundEnabled, forKey: "SoundEnabled")
+    }
+    
+    func toggleSound() {
+        soundEnabled.toggle()
+        saveSoundSettings()
     }
     
     // MARK: - Oyun Mantığı
     func startNewGame() {
-        targetWord = wordManager.getRandomWord()
+        targetWord = wordManager.getRandomWord(length: wordLength)
         currentGuess = ""
         guesses = []
         gameState = .playing
@@ -51,7 +70,7 @@ class GameModel: ObservableObject {
         timeRemaining = gameDuration
         startTimer()
         
-        print("Yeni kelime: \(targetWord)") // Debug için
+        print("Yeni kelime (\(wordLength) harf): \(targetWord)") // Debug için
     }
     
     func makeGuess() {
@@ -61,7 +80,7 @@ class GameModel: ObservableObject {
         let guess = currentGuess.uppercased()
         
         // Kelime kontrolü
-        guard wordManager.isValidWord(guess) else {
+        guard wordManager.isValidWord(guess, length: wordLength) else {
             showInvalidWordAlert = true
             return
         }
@@ -125,31 +144,11 @@ class GameModel: ObservableObject {
     
     // MARK: - İstatistik Yönetimi
     private func updateStatisticsForWin() {
-        statistics.gamesPlayed += 1
-        statistics.gamesWon += 1
-        statistics.currentStreak += 1
-        statistics.maxStreak = max(statistics.maxStreak, statistics.currentStreak)
-        statistics.guessDistribution[guesses.count, default: 0] += 1
-        saveStatistics()
+        statisticsManager.updateForWin(guessCount: guesses.count)
     }
     
     private func updateStatisticsForLoss() {
-        statistics.gamesPlayed += 1
-        statistics.currentStreak = 0
-        saveStatistics()
-    }
-    
-    private func saveStatistics() {
-        if let encoded = try? JSONEncoder().encode(statistics) {
-            UserDefaults.standard.set(encoded, forKey: "GameStatistics")
-        }
-    }
-    
-    private func loadStatistics() {
-        if let data = UserDefaults.standard.data(forKey: "GameStatistics"),
-           let decoded = try? JSONDecoder().decode(GameStatistics.self, from: data) {
-            statistics = decoded
-        }
+        statisticsManager.updateForLoss()
     }
     
     // MARK: - Yardımcı Fonksiyonlar
@@ -235,8 +234,12 @@ class GameModel: ObservableObject {
         timeRemaining += seconds
         playSound(named: "success")
     }
-    // MARK: - Ses Efektleri
+    
+    // MARK: - Ses Efektleri (Ayar kontrollü)
     private func playSound(named soundName: String) {
+        // Ses kapalıysa çalma
+        guard soundEnabled else { return }
+        
         // System ses efektlerini kullan
         switch soundName {
         case "click":

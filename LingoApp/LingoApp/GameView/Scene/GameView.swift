@@ -9,14 +9,16 @@ import SwiftUI
 
 struct GameView: View {
     let difficulty: DifficultyLevel
+    @Binding var soundEnabled: Bool
     let onBackToMenu: () -> Void
     
     @StateObject private var game: GameModel
     @State private var showStatistics = false
     @State private var showGameOver = false
     
-    init(difficulty: DifficultyLevel, onBackToMenu: @escaping () -> Void) {
+    init(difficulty: DifficultyLevel, soundEnabled: Binding<Bool>, onBackToMenu: @escaping () -> Void) {
         self.difficulty = difficulty
+        self._soundEnabled = soundEnabled
         self.onBackToMenu = onBackToMenu
         self._game = StateObject(wrappedValue: GameModel(difficulty: difficulty))
     }
@@ -87,6 +89,12 @@ struct GameView: View {
                 }
             }
         }
+        .onAppear {
+            game.soundEnabled = soundEnabled
+        }
+        .onChange(of: soundEnabled) { newValue in
+            game.soundEnabled = newValue
+        }
         .alert("Geçersiz Kelime", isPresented: $game.showInvalidWordAlert) {
             Button("Tamam") { }
         } message: {
@@ -119,12 +127,12 @@ struct TimerProgressView: View {
     @ObservedObject var game: GameModel
     
     var progressValue: Double {
-        game.timeRemaining / game.gameDuration
+        min(game.timeRemaining / game.gameDuration, 1.0) // 1.0'ı geçmemesini sağla
     }
     
     var timeColor: Color {
         if game.timeRemaining > 60 {
-            return .red
+            return .green
         } else if game.timeRemaining > 30 {
             return .orange
         } else {
@@ -160,33 +168,36 @@ struct TimerProgressView: View {
                 }
             }
             
-            // Progress bar
-            ZStack(alignment: .leading) {
-                // Arkaplan
-                RoundedRectangle(cornerRadius: 6)
-                    .fill(.ultraThinMaterial)
-                    .frame(height: 8)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 6)
-                            .stroke(.white.opacity(0.2), lineWidth: 1)
-                    )
-                
-                // Progress
-                RoundedRectangle(cornerRadius: 6)
-                    .fill(
-                        LinearGradient(
-                            colors: progressValue > 0.5 ?
-                            [.red, .red.opacity(0.8)] :
-                                progressValue > 0.25 ?
-                            [.orange, .red] :
-                                [.red, .red.opacity(0.6)],
-                            startPoint: .leading,
-                            endPoint: .trailing
+            // Progress bar - SABİT GENİŞLİK
+            GeometryReader { geometry in
+                ZStack(alignment: .leading) {
+                    // Arkaplan - tam genişlik
+                    RoundedRectangle(cornerRadius: 6)
+                        .fill(.ultraThinMaterial)
+                        .frame(height: 8)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 6)
+                                .stroke(.white.opacity(0.2), lineWidth: 1)
                         )
-                    )
-                    .frame(width: max(0, UIScreen.main.bounds.width * 0.8 * progressValue), height: 8)
-                    .animation(.linear(duration: 1), value: progressValue)
+                    
+                    // Progress - dinamik genişlik ama sınırlı
+                    RoundedRectangle(cornerRadius: 6)
+                        .fill(
+                            LinearGradient(
+                                colors: progressValue > 0.5 ?
+                                [.green, .green.opacity(0.8)] :
+                                    progressValue > 0.25 ?
+                                [.orange, .red] :
+                                    [.red, .red.opacity(0.6)],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .frame(width: max(0, geometry.size.width * progressValue), height: 8)
+                        .animation(.linear(duration: 1), value: progressValue)
+                }
             }
+            .frame(height: 8) // Progress bar yüksekliği sabit
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 10)
@@ -200,7 +211,6 @@ struct TimerProgressView: View {
         )
     }
 }
-
 // MARK: - Oyun Tahtası
 struct GameBoard: View {
     @ObservedObject var game: GameModel
@@ -253,14 +263,5 @@ struct GameBoard: View {
 extension Animation {
     static func blink(duration: Double = 1.0) -> Animation {
         Animation.easeInOut(duration: duration).repeatForever(autoreverses: true)
-    }
-}
-
-// MARK: - Preview
-struct GameView_Previews: PreviewProvider {
-    static var previews: some View {
-        GameView(difficulty: .medium, onBackToMenu: {
-            print("Back to menu")
-        })
     }
 }

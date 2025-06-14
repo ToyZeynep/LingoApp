@@ -32,7 +32,7 @@ enum DifficultyLevel: String, CaseIterable, Codable {
     
     var description: String {
         switch self {
-        case .easy: return "4 harfli kelimeler\nYeni başlayanlar için"
+        case .easy: return "4 harfli kelimeler\nAcemiler için"
         case .medium: return "5 harfli kelimeler\nKlasik mod"
         case .hard: return "6 harfli kelimeler\nUzmanlar için"
         }
@@ -69,4 +69,37 @@ enum DifficultyLevel: String, CaseIterable, Codable {
         case .hard: return 4
         }
     }
+    
+    var emoji: String {
+          switch self {
+          case .easy:
+              return "🌱"
+          case .medium:
+              return "🔥"
+          case .hard:
+              return "⚡"
+          }
+      }
+      
+      var color: Color {
+          switch self {
+          case .easy:
+              return .mint
+          case .medium:
+              return .orange
+          case .hard:
+              return .purple
+          }
+      }
+      
+      var displayName: String {
+          switch self {
+          case .easy:
+              return "ACEMİ"
+          case .medium:
+              return "ORTA"
+          case .hard:
+              return "UZMAN"
+          }
+      }
 }
