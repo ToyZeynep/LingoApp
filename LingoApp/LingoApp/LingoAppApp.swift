@@ -6,9 +6,19 @@
 //
 
 import SwiftUI
+import Firebase
 
 @main
 struct LingoAppApp: App {
+    
+    init() {
+        FirebaseApp.configure()
+        
+    #if DEBUG
+        Analytics.setAnalyticsCollectionEnabled(true)
+        #endif
+    }
+    
     var body: some Scene {
         WindowGroup {
             ContentView()

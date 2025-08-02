@@ -6,6 +6,17 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		216AD0C22E3EB228009FF756 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 216AD0C12E3EB228009FF756 /* FirebaseAnalytics */; };
+		216AD0C42E3EB228009FF756 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 216AD0C32E3EB228009FF756 /* FirebaseAuth */; };
+		216AD0C62E3EB228009FF756 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 216AD0C52E3EB228009FF756 /* FirebaseCore */; };
+		216AD0C82E3EB228009FF756 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 216AD0C72E3EB228009FF756 /* FirebaseCrashlytics */; };
+		216AD0CA2E3EB228009FF756 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 216AD0C92E3EB228009FF756 /* FirebaseDatabase */; };
+		216AD0CC2E3EB228009FF756 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 216AD0CB2E3EB228009FF756 /* FirebaseFirestore */; };
+		216AD0CE2E3EB228009FF756 /* FirebaseRemoteConfig in Frameworks */ = {isa = PBXBuildFile; productRef = 216AD0CD2E3EB228009FF756 /* FirebaseRemoteConfig */; };
+		216AD0D02E3EB228009FF756 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 216AD0CF2E3EB228009FF756 /* FirebaseStorage */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		21B3E0FD2DFDBA9800633EB3 /* LingoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LingoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -23,6 +34,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				216AD0CA2E3EB228009FF756 /* FirebaseDatabase in Frameworks */,
+				216AD0C22E3EB228009FF756 /* FirebaseAnalytics in Frameworks */,
+				216AD0C82E3EB228009FF756 /* FirebaseCrashlytics in Frameworks */,
+				216AD0CE2E3EB228009FF756 /* FirebaseRemoteConfig in Frameworks */,
+				216AD0C62E3EB228009FF756 /* FirebaseCore in Frameworks */,
+				216AD0D02E3EB228009FF756 /* FirebaseStorage in Frameworks */,
+				216AD0C42E3EB228009FF756 /* FirebaseAuth in Frameworks */,
+				216AD0CC2E3EB228009FF756 /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +84,14 @@
 			);
 			name = LingoApp;
 			packageProductDependencies = (
+				216AD0C12E3EB228009FF756 /* FirebaseAnalytics */,
+				216AD0C32E3EB228009FF756 /* FirebaseAuth */,
+				216AD0C52E3EB228009FF756 /* FirebaseCore */,
+				216AD0C72E3EB228009FF756 /* FirebaseCrashlytics */,
+				216AD0C92E3EB228009FF756 /* FirebaseDatabase */,
+				216AD0CB2E3EB228009FF756 /* FirebaseFirestore */,
+				216AD0CD2E3EB228009FF756 /* FirebaseRemoteConfig */,
+				216AD0CF2E3EB228009FF756 /* FirebaseStorage */,
 			);
 			productName = LingoApp;
 			productReference = 21B3E0FD2DFDBA9800633EB3 /* LingoApp.app */;
@@ -94,6 +121,9 @@
 			);
 			mainGroup = 21B3E0F42DFDBA9800633EB3;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				216AD0C02E3EB228009FF756 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 21B3E0FE2DFDBA9800633EB3 /* Products */;
 			projectDirPath = "";
@@ -345,6 +375,60 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		216AD0C02E3EB228009FF756 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		216AD0C12E3EB228009FF756 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 216AD0C02E3EB228009FF756 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		216AD0C32E3EB228009FF756 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 216AD0C02E3EB228009FF756 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		216AD0C52E3EB228009FF756 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 216AD0C02E3EB228009FF756 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		216AD0C72E3EB228009FF756 /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 216AD0C02E3EB228009FF756 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
+		};
+		216AD0C92E3EB228009FF756 /* FirebaseDatabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 216AD0C02E3EB228009FF756 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDatabase;
+		};
+		216AD0CB2E3EB228009FF756 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 216AD0C02E3EB228009FF756 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		216AD0CD2E3EB228009FF756 /* FirebaseRemoteConfig */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 216AD0C02E3EB228009FF756 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseRemoteConfig;
+		};
+		216AD0CF2E3EB228009FF756 /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 216AD0C02E3EB228009FF756 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 21B3E0F52DFDBA9800633EB3 /* Project object */;
 }
