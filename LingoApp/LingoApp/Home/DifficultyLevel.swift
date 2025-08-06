@@ -65,8 +65,9 @@ enum DifficultyLevel: String, CaseIterable, Codable {
     var maxGuesses: Int {
         switch self {
         case .easy: return 6
-        case .medium: return 5
-        case .hard: return 4
+        case .medium: return 6
+        case .hard: return 6
+            
         }
     }
     

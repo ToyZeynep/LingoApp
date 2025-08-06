@@ -22,89 +22,80 @@ struct KeyboardView: View {
     
     var body: some View {
         GeometryReader { geometry in
-            let availableWidth = geometry.size.width - 16 // Padding için
-            let buttonWidth = min(availableWidth / 11, 32) // Maksimum 32, minimum hesaplanacak
-            let actualButtonWidth = max(buttonWidth, 28) // Minimum 28 genişlik
+            let availableWidth = geometry.size.width - 16
+            let buttonWidth = min(availableWidth / 12, 32)
+            let actualButtonWidth = max(buttonWidth, 26)
             
             VStack(spacing: 8) {
-                // İlk satır
-                HStack(spacing: 3) {
-                    ForEach(keyboardRows[0], id: \.self) { key in
-                        if !game.jokerManager.removedLetters.contains(Character(key)) {
-                            Button(key) {
-                                game.addLetter(key)
+                ForEach(0..<2, id: \.self) { rowIndex in
+                    HStack(spacing: 3) {
+                        ForEach(keyboardRows[rowIndex], id: \.self) { key in
+                            if !game.jokerManager.removedLetters.contains(Character(key)) {
+                                Button(action: {
+                                    game.addLetter(key)
+                                }) {
+                                    Text(key)
+                                }
+                                .keyboardButtonStyle(
+                                    width: actualButtonWidth,
+                                    backgroundColor: getKeyColor(for: key),
+                                    textColor: getKeyTextColor(for: key)
+                                )
+                                .disabled(game.gameState != .playing)
                             }
-                            .keyboardButtonStyle(
-                                width: actualButtonWidth,
-                                backgroundColor: getKeyColor(for: key),
-                                textColor: getKeyTextColor(for: key)
-                            )
-                            .disabled(game.gameState != .playing)
                         }
                     }
                 }
                 
-                // İkinci satır
                 HStack(spacing: 3) {
-                    ForEach(keyboardRows[1], id: \.self) { key in
-                        if !game.jokerManager.removedLetters.contains(Character(key)) {
-                            Button(key) {
-                                game.addLetter(key)
-                            }
-                            .keyboardButtonStyle(
-                                width: actualButtonWidth,
-                                backgroundColor: getKeyColor(for: key),
-                                textColor: getKeyTextColor(for: key)
-                            )
-                            .disabled(game.gameState != .playing)
-                        }
-                    }
-                }
-                
-                // Üçüncü satır (ENTER + harfler + DELETE)
-                HStack(spacing: 3) {
-                    Button("GİR") {
-                        game.makeGuess()
-                    }
-                    .keyboardButtonStyle(
-                        width: actualButtonWidth * 1.3,
-                        backgroundColor: .cyan,
-                        textColor: .white
-                    )
-                    .disabled(game.currentGuess.count != remainingLettersNeeded || game.gameState != .playing)
-                    
                     ForEach(keyboardRows[2], id: \.self) { key in
-                        Button(key) {
-                            game.addLetter(key)
+                        if !game.jokerManager.removedLetters.contains(Character(key)) {
+                            Button(action: {
+                                game.addLetter(key)
+                            }) {
+                                Text(key)
+                            }
+                            .keyboardButtonStyle(
+                                width: actualButtonWidth,
+                                backgroundColor: getKeyColor(for: key),
+                                textColor: getKeyTextColor(for: key)
+                            )
+                            .disabled(game.gameState != .playing)
                         }
-                        .keyboardButtonStyle(
-                            width: actualButtonWidth,
-                            backgroundColor: getKeyColor(for: key),
-                            textColor: getKeyTextColor(for: key)
-                        )
-                        .disabled(game.gameState != .playing)
                     }
-                    
+                }
+                
+                HStack(spacing: 10) {
                     Button("⌫") {
                         game.deleteLetter()
                     }
                     .keyboardButtonStyle(
-                        width: actualButtonWidth * 1.3,
-                        backgroundColor: .red.opacity(0.8),
+                        width: actualButtonWidth * 2,
+                        backgroundColor: .red.opacity(0.85),
                         textColor: .white
                     )
                     .disabled(game.currentGuess.isEmpty || game.gameState != .playing)
+                    
+                    Spacer()
+                    
+                    Button("GİR") {
+                        game.makeGuess()
+                    }
+                    .keyboardButtonStyle(
+                        width: actualButtonWidth * 2,
+                        backgroundColor: .cyan,
+                        textColor: .white
+                    )
+                    .disabled(game.currentGuess.count != remainingLettersNeeded || game.gameState != .playing)
                 }
             }
+            .padding(.horizontal, 8)
         }
-        .frame(height: 120)
-        .padding(.horizontal, 8)
+        .frame(height: 140)
     }
     
     private func getKeyColor(for key: String) -> Color {
         let keyChar = Character(key)
-        
-        // Tüm tahminleri kontrol et
         for guess in game.guesses {
             for letterState in guess.letters {
                 if letterState.letter == keyChar {
@@ -121,13 +112,11 @@ struct KeyboardView: View {
                 }
             }
         }
-        
         return Color.cyan.opacity(0.15)
     }
     
     private func getKeyTextColor(for key: String) -> Color {
         let keyChar = Character(key)
-        
         for guess in game.guesses {
             for letterState in guess.letters {
                 if letterState.letter == keyChar {
@@ -140,7 +129,6 @@ struct KeyboardView: View {
                 }
             }
         }
-        
         return .cyan.opacity(0.9)
     }
 }
@@ -151,17 +139,11 @@ struct KeyboardButtonStyle: ViewModifier {
     let backgroundColor: Color
     let textColor: Color
     
-    init(width: CGFloat = 32, backgroundColor: Color = .gray.opacity(0.2), textColor: Color = .primary) {
-        self.width = width
-        self.backgroundColor = backgroundColor
-        self.textColor = textColor
-    }
-    
     func body(content: Content) -> some View {
         content
-            .font(.system(size: 15, weight: .medium))
+            .font(.system(size: 14, weight: .semibold))
             .foregroundColor(textColor)
-            .frame(width: width, height: 42)
+            .frame(width: width, height: 40)
             .background(backgroundColor)
             .cornerRadius(6)
     }
@@ -170,12 +152,5 @@ struct KeyboardButtonStyle: ViewModifier {
 extension View {
     func keyboardButtonStyle(width: CGFloat = 32, backgroundColor: Color = Color.cyan.opacity(0.15), textColor: Color = .cyan.opacity(0.9)) -> some View {
         self.modifier(KeyboardButtonStyle(width: width, backgroundColor: backgroundColor, textColor: textColor))
-    }
-}
-
-// MARK: - Preview
-struct KeyboardView_Previews: PreviewProvider {
-    static var previews: some View {
-        KeyboardView(game: GameModel())
     }
 }
