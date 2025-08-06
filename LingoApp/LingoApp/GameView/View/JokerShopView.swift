@@ -75,11 +75,15 @@ struct JokerShopView: View {
     // MARK: - Header
     private var headerSection: some View {
         HStack {
-            Button("Kapat") {
-                dismiss()
+            Button(action: { dismiss() }) {
+                HStack(spacing: 4) {
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 14, weight: .semibold))
+                    Text("Kapat")
+                        .font(.system(size: 16, weight: .medium))
+                }
+                .foregroundColor(.cyan.opacity(0.9))
             }
-            .font(.system(size: 16, weight: .medium))
-            .foregroundColor(.cyan.opacity(0.9))
             
             Spacer()
             
@@ -91,7 +95,7 @@ struct JokerShopView: View {
             
             // Boş alan (simetri için)
             Color.clear
-                .frame(width: 50)
+                .frame(width: 60)
         }
     }
     
@@ -144,7 +148,7 @@ struct JokerShopView: View {
                 }
             }
             
-            Text("Reklam izleyerek ücretsiz joker kazanabilirsin!")
+            Text("Reklam izleyerek ücretsiz joker kazanabilirsin! (Her reklam +10 joker)")
                 .font(.system(size: 14))
                 .foregroundColor(.white.opacity(0.7))
             
@@ -189,7 +193,7 @@ struct JokerShopView: View {
                 PremiumPackageButton(
                     title: "Başlangıç Paketi",
                     description: "Her jokerden 3'er adet",
-                    price: "₺9.99",
+                    price: "₺49.99",
                     jokerCounts: [3, 3, 3]
                 ) {
                     purchasePremiumPackage(.starter)
@@ -198,7 +202,7 @@ struct JokerShopView: View {
                 PremiumPackageButton(
                     title: "Mega Paket",
                     description: "Her jokerden 10'ar adet",
-                    price: "₺24.99",
+                    price: "₺99.99",
                     jokerCounts: [10, 10, 10]
                 ) {
                     purchasePremiumPackage(.mega)
@@ -228,7 +232,7 @@ struct JokerShopView: View {
                     let rewardAmount = 10
                     jokerManager.addJoker(jokerType, count: rewardAmount)
                     
-                    rewardMessage = "\(jokerType.title) jokerinden \(rewardAmount) adet kazandınız!"
+                    rewardMessage = "\(jokerType.title) jokerinden \(rewardAmount) adet kazandınız! 🎉"
                     showRewardAlert = true
                 } else {
                     // Network sorunu varsa alternatif mesaj

@@ -11,72 +11,61 @@ import AVFoundation
 struct JokerCompactView: View {
     @ObservedObject var game: GameModel
     @State private var showJokerShop = false
+    @State private var selectedJokerType: JokerType?
     
     var body: some View {
-        VStack(spacing: 15) {
-            // Joker başlığı ve mağaza butonu
-            HStack {
-                Text("🃏 JOKERLER")
-                    .font(.system(size: 16, weight: .bold))
-                    .foregroundColor(.cyan.opacity(0.9))
-                
-                Spacer()
-                
-                Button("+ JOKER AL") {
-                    showJokerShop = true
-                }
-                .font(.caption)
-                .fontWeight(.semibold)
-                .foregroundColor(.yellow)
-                .padding(.horizontal, 10)
-                .padding(.vertical, 5)
-                .background(
-                    Capsule()
-                        .stroke(.yellow.opacity(0.6), lineWidth: 1)
-                        .background(Capsule().fill(.yellow.opacity(0.2)))
-                )
-            }
-            
-            // Tek sırada büyük joker butonları
-            HStack(spacing: 10) {
-                ForEach(JokerType.allCases, id: \.self) { jokerType in
-                    BigJokerButton(
-                        type: jokerType,
-                        count: game.jokerManager.jokers.count(for: jokerType),
-                        isDisabled: game.jokerManager.jokers.count(for: jokerType) == 0
-                    ) {
-                        useJoker(jokerType)
+        HStack(spacing: 10) {
+            ForEach(JokerType.allCases, id: \.self) { jokerType in
+                BigJokerButton(
+                    type: jokerType,
+                    count: game.jokerManager.jokers.count(for: jokerType),
+                    onTap: {
+                        handleJokerTap(jokerType)
+                    },
+                    onLongPress: {
+                        selectedJokerType = jokerType
+                        showJokerShop = true
                     }
-                }
+                )
             }
         }
         .sheet(isPresented: $showJokerShop) {
-            JokerShopView(jokerManager: game.jokerManager)
+            JokerShopView(
+                jokerManager: game.jokerManager
+            )
         }
     }
     
-    // ✅ DÜZELTME: Yeni useJoker fonksiyonu
-    private func useJoker(_ type: JokerType) {
-        // Joker sayısını kontrol et
-        guard game.jokerManager.jokers.count(for: type) > 0 else {
-            // Ses ayarını kontrol et
+    private func handleJokerTap(_ type: JokerType) {
+        if game.jokerManager.jokers.count(for: type) == 0 {
+            selectedJokerType = type
+            showJokerShop = true
+            
             if game.soundEnabled {
                 AudioServicesPlaySystemSound(1053)
             }
             return
         }
         
-        // Joker sayısını azalt
+        useJoker(type)
+    }
+    
+    private func useJoker(_ type: JokerType) {
+        guard game.jokerManager.jokers.count(for: type) > 0 else {
+            if game.soundEnabled {
+                AudioServicesPlaySystemSound(1053)
+            }
+            return
+        }
+        
         let success = game.jokerManager.jokers.use(type)
         
         if success {
-            // Joker türüne göre aksiyonu gerçekleştir
             switch type {
             case .revealLetter:
-                game.useJoker() // ✅ GameModel'deki useJoker fonksiyonunu çağır
+                game.useJoker()
                 
             case .removeLetter:
-                // Yanlış harfleri kaldır (eski mantık)
                 let alphabet = "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ"
                 let targetLetters = Set(game.targetWord)
                 
@@ -87,21 +76,18 @@ struct JokerCompactView: View {
                 }
                 
             case .extraTime:
-                game.addExtraTime(30) // 30 saniye ekle
+                game.addExtraTime(30)
             }
             
-            // Kullanılan jokeri işaretle
             game.jokerManager.usedJokersInCurrentGame.insert(type)
             game.jokerManager.saveJokers()
             
-            // Başarı sesi
             if game.soundEnabled {
                 AudioServicesPlaySystemSound(1057)
                 let impactFeedback = UIImpactFeedbackGenerator(style: .light)
                 impactFeedback.impactOccurred()
             }
         } else {
-            // Hata sesi
             if game.soundEnabled {
                 AudioServicesPlaySystemSound(1053)
             }
@@ -109,72 +95,93 @@ struct JokerCompactView: View {
     }
 }
 
-// MARK: - Büyük Parlak Joker Butonu
 struct BigJokerButton: View {
     let type: JokerType
     let count: Int
-    let isDisabled: Bool
-    let action: () -> Void
+    let onTap: () -> Void
+    let onLongPress: () -> Void
+    
+    @State private var isPressed = false
     
     var body: some View {
-        Button(action: action) {
-            VStack(spacing: 8) {
+        Button(action: onTap) {
+            VStack(spacing: 6) {
                 ZStack {
-                    // Ana ikon - çok parlak
                     Image(systemName: type.icon)
-                        .font(.system(size: 22, weight: .bold))
+                        .font(.system(size: 24, weight: .bold))
                         .foregroundColor(.white)
                         .shadow(color: .black.opacity(0.4), radius: 2, x: 0, y: 1)
                     
-                    // Sayı badge'i - süper parlak
-                    if count > 0 {
-                        Text("\(count)")
-                            .font(.system(size: 12, weight: .black))
-                            .foregroundColor(.white)
-                            .frame(width: 22, height: 22)
-                            .background(
-                                Circle()
-                                    .fill(LinearGradient(colors: [.red, .red.opacity(0.7)], startPoint: .top, endPoint: .bottom))
-                                    .overlay(Circle().stroke(.white, lineWidth: 2))
-                                    .shadow(color: .red.opacity(0.5), radius: 3, x: 0, y: 1)
-                            )
-                            .offset(x: 14, y: -14)
+                    ZStack {
+                        if count > 0 {
+                            Text("\(count)")
+                                .font(.system(size: 12, weight: .black))
+                                .foregroundColor(.white)
+                                .frame(width: 22, height: 22)
+                                .background(
+                                    Circle()
+                                        .fill(type.brightColor)
+                                        .overlay(Circle().stroke(.white, lineWidth: 2))
+                                        .shadow(color: type.brightColor.opacity(0.5), radius: 3, x: 0, y: 1)
+                                )
+                        } else {
+                            Image(systemName: "plus.circle.fill")
+                                .font(.system(size: 20, weight: .bold))
+                                .foregroundColor(type.brightColor)
+                                .background(
+                                    Circle()
+                                        .fill(.white)
+                                        .frame(width: 18, height: 18)
+                                )
+                                .shadow(color: type.brightColor.opacity(0.6), radius: 3, x: 0, y: 1)
+                        }
                     }
+                    .offset(x: 15, y: -15)
                 }
                 
                 Text(type.title)
-                    .font(.system(size: 11, weight: .bold))
+                    .font(.system(size: 10, weight: .bold))
                     .foregroundColor(.white)
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
                     .shadow(color: .black.opacity(0.3), radius: 1, x: 0, y: 1)
             }
-            .frame(width: 75, height: 65)
+            .frame(width: 75, height: 68)
             .background(
                 RoundedRectangle(cornerRadius: 14)
                     .fill(
-                        isDisabled ?
-                            LinearGradient(colors: [.gray.opacity(0.5), .gray.opacity(0.3)], startPoint: .top, endPoint: .bottom) :
-                            LinearGradient(colors: [type.brightColor, type.brightColor.opacity(0.8)], startPoint: .top, endPoint: .bottom)
+                        LinearGradient(
+                            colors: [
+                                type.brightColor.opacity(count > 0 ? 0.9 : 0.3),
+                                type.brightColor.opacity(count > 0 ? 0.7 : 0.2)
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: 14)
-                            .stroke(isDisabled ? .gray.opacity(0.4) : .white.opacity(0.3), lineWidth: 2)
+                            .stroke(Color.white.opacity(count > 0 ? 0.3 : 0.15), lineWidth: 2)
                     )
-                    .shadow(color: isDisabled ? .clear : type.brightColor.opacity(0.6), radius: 8, x: 0, y: 4)
+                    .shadow(color: type.brightColor.opacity(count > 0 ? 0.5 : 0.2), radius: 8, x: 0, y: 4)
+            )
+            .overlay(
+                count == 0 ?
+                RoundedRectangle(cornerRadius: 14)
+                    .stroke(type.brightColor.opacity(0.3), lineWidth: 2)
+                    .scaleEffect(isPressed ? 1.05 : 1.0)
+                    .animation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true), value: count)
+                : nil
             )
         }
-        .disabled(isDisabled)
-        .scaleEffect(isDisabled ? 0.9 : 1.0)
-        .animation(.easeInOut(duration: 0.2), value: isDisabled)
+        .scaleEffect(isPressed ? 0.95 : 1.0)
+        .onLongPressGesture(minimumDuration: 0.5, pressing: { pressing in
+            withAnimation(.easeInOut(duration: 0.1)) {
+                isPressed = pressing
+            }
+        }) {
+            onLongPress()
+        }
         .animation(.spring(response: 0.3, dampingFraction: 0.6), value: count)
-    }
-}
-
-// MARK: - Preview
-struct JokerView_Previews: PreviewProvider {
-    static var previews: some View {
-        JokerCompactView(game: GameModel(difficulty: .medium))
-            .padding()
     }
 }
