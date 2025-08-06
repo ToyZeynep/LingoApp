@@ -7,11 +7,15 @@
 
 import SwiftUI
 import Firebase
+import GoogleMobileAds
 
 @main
 struct LingoAppApp: App {
     
     init() {
+        MobileAds.shared.start { status in
+            print("AdMob başlatıldı. Status: \(status)")
+        }
         FirebaseApp.configure()
         
     #if DEBUG

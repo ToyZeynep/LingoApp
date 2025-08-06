@@ -54,11 +54,6 @@ struct JokerCompactView: View {
         .sheet(isPresented: $showJokerShop) {
             JokerShopView(jokerManager: game.jokerManager)
         }
-        .alert("💡 İpucu", isPresented: $game.jokerManager.showHintPopup) {
-            Button("Tamam") { }
-        } message: {
-            Text(game.jokerManager.currentHint)
-        }
     }
     
     private func useJoker(_ type: JokerType) {
@@ -139,125 +134,6 @@ struct BigJokerButton: View {
         .scaleEffect(isDisabled ? 0.9 : 1.0)
         .animation(.easeInOut(duration: 0.2), value: isDisabled)
         .animation(.spring(response: 0.3, dampingFraction: 0.6), value: count)
-    }
-}
-
-// MARK: - Joker Mağazası
-struct JokerShopView: View {
-    @ObservedObject var jokerManager: JokerManager
-    @Environment(\.dismiss) private var dismiss
-    @State private var showAdReward = false
-    
-    var body: some View {
-        NavigationView {
-            VStack(spacing: 30) {
-                // Başlık
-                VStack(spacing: 10) {
-                    Text("🃏")
-                        .font(.system(size: 60))
-                    
-                    Text("JOKER MAĞAZASI")
-                        .font(.title2)
-                        .fontWeight(.bold)
-                        .foregroundColor(.cyan)
-                }
-                
-                // Mevcut Jokerler
-                VStack(alignment: .leading, spacing: 15) {
-                    Text("Mevcut Jokerleriniz:")
-                        .font(.headline)
-                        .foregroundColor(.secondary)
-                    
-                    ForEach(JokerType.allCases, id: \.self) { type in
-                        HStack {
-                            Image(systemName: type.icon)
-                                .foregroundColor(type.brightColor)
-                                .frame(width: 24)
-                            
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(type.title)
-                                    .font(.subheadline)
-                                    .fontWeight(.medium)
-                                
-                                Text(type.description)
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                            
-                            Spacer()
-                            
-                            Text("\(jokerManager.jokers.count(for: type))")
-                                .font(.title2)
-                                .fontWeight(.bold)
-                                .foregroundColor(type.brightColor)
-                        }
-                        .padding()
-                        .background(
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(type.brightColor.opacity(0.1))
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 12)
-                                        .stroke(type.brightColor.opacity(0.3), lineWidth: 1)
-                                )
-                        )
-                    }
-                }
-                
-                // Reklam ile Joker Kazan
-                Button(action: {
-                    showAdReward = true
-                }) {
-                    HStack {
-                        Image(systemName: "tv.fill")
-                            .font(.title2)
-                        
-                        VStack(alignment: .leading) {
-                            Text("REKLAM İZLE")
-                                .font(.headline)
-                                .fontWeight(.bold)
-                            
-                            Text("Ücretsiz joker kazan!")
-                                .font(.caption)
-                        }
-                        
-                        Spacer()
-                        
-                        Text("🎁")
-                            .font(.title)
-                    }
-                    .foregroundColor(.white)
-                    .padding()
-                    .background(
-                        LinearGradient(
-                            colors: [.purple, .blue],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                    )
-                    .cornerRadius(16)
-                }
-                
-                Spacer()
-            }
-            .padding()
-            .navigationTitle("Joker Mağazası")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Kapat") {
-                        dismiss()
-                    }
-                }
-            }
-        }
-        .alert("🎁 Tebrikler!", isPresented: $showAdReward) {
-            Button("Harika!") {
-                jokerManager.earnJokersFromAd()
-                dismiss()
-            }
-        } message: {
-            Text("Reklam izlediğiniz için rastgele bir joker kazandınız!")
-        }
     }
 }
 

@@ -15,15 +15,29 @@
 		216AD0CC2E3EB228009FF756 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 216AD0CB2E3EB228009FF756 /* FirebaseFirestore */; };
 		216AD0CE2E3EB228009FF756 /* FirebaseRemoteConfig in Frameworks */ = {isa = PBXBuildFile; productRef = 216AD0CD2E3EB228009FF756 /* FirebaseRemoteConfig */; };
 		216AD0D02E3EB228009FF756 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 216AD0CF2E3EB228009FF756 /* FirebaseStorage */; };
+		21FA36B02E4299B2009EA512 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 21FA36AF2E4299B2009EA512 /* GoogleMobileAds */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		21B3E0FD2DFDBA9800633EB3 /* LingoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LingoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		21FA37502E429C2F009EA512 /* Exceptions for "LingoApp" folder in "LingoApp" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 21B3E0FC2DFDBA9800633EB3 /* LingoApp */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		21B3E0FF2DFDBA9800633EB3 /* LingoApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				21FA37502E429C2F009EA512 /* Exceptions for "LingoApp" folder in "LingoApp" target */,
+			);
 			path = LingoApp;
 			sourceTree = "<group>";
 		};
@@ -37,6 +51,7 @@
 				216AD0CA2E3EB228009FF756 /* FirebaseDatabase in Frameworks */,
 				216AD0C22E3EB228009FF756 /* FirebaseAnalytics in Frameworks */,
 				216AD0C82E3EB228009FF756 /* FirebaseCrashlytics in Frameworks */,
+				21FA36B02E4299B2009EA512 /* GoogleMobileAds in Frameworks */,
 				216AD0CE2E3EB228009FF756 /* FirebaseRemoteConfig in Frameworks */,
 				216AD0C62E3EB228009FF756 /* FirebaseCore in Frameworks */,
 				216AD0D02E3EB228009FF756 /* FirebaseStorage in Frameworks */,
@@ -92,6 +107,7 @@
 				216AD0CB2E3EB228009FF756 /* FirebaseFirestore */,
 				216AD0CD2E3EB228009FF756 /* FirebaseRemoteConfig */,
 				216AD0CF2E3EB228009FF756 /* FirebaseStorage */,
+				21FA36AF2E4299B2009EA512 /* GoogleMobileAds */,
 			);
 			productName = LingoApp;
 			productReference = 21B3E0FD2DFDBA9800633EB3 /* LingoApp.app */;
@@ -123,6 +139,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				216AD0C02E3EB228009FF756 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				21FA36AE2E4299B2009EA512 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 21B3E0FE2DFDBA9800633EB3 /* Products */;
@@ -278,11 +295,12 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = LingoApp/LingoApp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = CS883PSQ64;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = LingoApp/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Word Lingo";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -319,11 +337,12 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = LingoApp/LingoApp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = CS883PSQ64;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = LingoApp/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Word Lingo";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -385,6 +404,14 @@
 				minimumVersion = 12.0.0;
 			};
 		};
+		21FA36AE2E4299B2009EA512 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.8.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -427,6 +454,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 216AD0C02E3EB228009FF756 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseStorage;
+		};
+		21FA36AF2E4299B2009EA512 /* GoogleMobileAds */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 21FA36AE2E4299B2009EA512 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
+			productName = GoogleMobileAds;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
