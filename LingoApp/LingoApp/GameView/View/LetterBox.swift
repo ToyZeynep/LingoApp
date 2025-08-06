@@ -69,7 +69,7 @@ struct LetterBox: View {
     
     private var backgroundColor: LinearGradient {
         switch state {
-        case .correct:
+        case .correct, .revealed:
             return LinearGradient(
                 colors: [Color.cyan, Color.blue.opacity(0.8)],
                 startPoint: .topLeading,
@@ -104,7 +104,7 @@ struct LetterBox: View {
     
     private var textColor: Color {
         switch state {
-        case .correct, .wrong:
+        case .correct, .wrong, .revealed:
             return .white
         case .wrongPosition:
             return .white
@@ -141,6 +141,8 @@ struct LetterBox: View {
             return .gray.opacity(0.3)
         case .unused:
             return .black.opacity(0.15)
+        case .revealed:
+            return .cyan.opacity(0.4)
         }
     }
     

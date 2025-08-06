@@ -19,14 +19,13 @@ class GameModel: ObservableObject {
     @Published var timeRemaining: TimeInterval = 120
     @Published var isTimerActive = false
     @Published var soundEnabled = true
-    @Published var isLoadingWord = false // Yeni: kelime yükleme durumu
+    @Published var isLoadingWord = false
+    @Published var revealedPositions: Set<Int> = []
     
     var maxGuesses = 5
     var wordLength = 5
     var gameDuration: TimeInterval = 120
     
-    // ❌ ESKİ: private let wordManager = WordManager()
-    // ✅ YENİ: Firebase WordUploader
     private let wordUploader = WordUploader()
     
     private var audioPlayer: AVAudioPlayer?
@@ -65,27 +64,23 @@ class GameModel: ObservableObject {
     
     // MARK: - Oyun Mantığı (Firebase ile)
     func startNewGame() {
-        // Loading durumunu göster
         isLoadingWord = true
         gameState = .playing
         currentGuess = ""
         guesses = []
         jokerManager.resetForNewGame()
+        revealedPositions.removeAll()
         timeRemaining = gameDuration
         
-        // Firebase'den kelime çek
         wordUploader.fetchRandomWord(length: wordLength) { [weak self] word in
             DispatchQueue.main.async {
                 guard let self = self else { return }
                 
                 if let word = word {
-                    self.targetWord = word.turkishUppercased // ✅ Türkçe büyük harf
+                    self.targetWord = word.turkishUppercased
                     self.isLoadingWord = false
                     self.startTimer()
-                    print("🎯 Yeni kelime (\(self.wordLength) harf): \(self.targetWord)")
                 } else {
-                    // Firebase'den kelime gelmediyse fallback
-                    print("❌ Firebase'den kelime alınamadı, fallback kullanılıyor")
                     self.targetWord = self.getFallbackWord()
                     self.isLoadingWord = false
                     self.startTimer()
@@ -94,7 +89,6 @@ class GameModel: ObservableObject {
         }
     }
     
-    // Fallback kelimeler (Firebase çalışmazsa)
     private func getFallbackWord() -> String {
         let fallbackWords: [Int: [String]] = [
             4: ["KEDI", "MASA", "ELMA", "DAMA", "YAZ"],
@@ -106,30 +100,58 @@ class GameModel: ObservableObject {
     }
     
     func makeGuess() {
-        guard currentGuess.count == wordLength,
+        let completeGuess = buildCompleteGuess()
+        
+        guard completeGuess.count == wordLength,
               gameState == .playing,
-              !isLoadingWord else { return }
-        
-        let guess = currentGuess.turkishUppercased // ✅ Türkçe büyük harf
-        
-        // Firebase ile kelime doğrulama (async)
-        validateWordAndProcess(guess)
-    }
-    
-    private func validateWordAndProcess(_ guess: String) {
-        // Optimizasyon: Eğer tahmin hedef kelime ile aynıysa doğrulama yapma
-        if guess == targetWord {
-            processValidGuess(guess)
+              !isLoadingWord else {
             return
         }
         
-        // Firebase'de kelime var mı kontrol et
+        if completeGuess == targetWord {
+            DispatchQueue.main.async {
+                self.gameState = .won
+                self.stopTimer()
+                self.playSound(named: "success")
+                self.updateStatisticsForWin()
+                self.currentGuess = ""
+            }
+            return
+        }
+        
+        validateWordAndProcess(completeGuess)
+    }
+    
+    private func buildCompleteGuess() -> String {
+        var completeGuess = ""
+        var currentGuessIndex = 0
+        let currentGuessArray = Array(currentGuess.turkishUppercased)
+        
+        for position in 0..<wordLength {
+            if revealedPositions.contains(position) {
+                let targetIndex = targetWord.index(targetWord.startIndex, offsetBy: position)
+                completeGuess += String(targetWord[targetIndex])
+            } else {
+                if currentGuessIndex < currentGuessArray.count {
+                    completeGuess += String(currentGuessArray[currentGuessIndex])
+                    currentGuessIndex += 1
+                } else {
+                    return currentGuess.turkishUppercased
+                }
+            }
+        }
+        
+        return completeGuess
+    }
+    
+    private func validateWordAndProcess(_ guess: String) {
+        
         wordUploader.isValidWord(guess) { [weak self] (isValid: Bool) in
             DispatchQueue.main.async {
                 guard let self = self else { return }
                 
                 if isValid {
-                    self.processValidGuess(guess)
+                    self.processNormalGuess(guess)
                 } else {
                     self.showInvalidWordAlert = true
                     self.playSound(named: "failure")
@@ -138,9 +160,28 @@ class GameModel: ObservableObject {
         }
     }
     
+    private func processNormalGuess(_ guess: String) {
+        let result = checkGuess(guess)
+        guesses.append(result)
+        updateRevealedPositionsFromGuess(guess)
+        
+        if guesses.count >= maxGuesses {
+            gameState = .lost
+            stopTimer()
+            playSound(named: "failure")
+            updateStatisticsForLoss()
+        } else {
+            playSound(named: "tap")
+        }
+        
+        currentGuess = ""
+    }
+    
     private func processValidGuess(_ guess: String) {
         let result = checkGuess(guess)
         guesses.append(result)
+        
+        updateRevealedPositionsFromGuess(guess)
         
         if guess == targetWord {
             gameState = .won
@@ -159,18 +200,52 @@ class GameModel: ObservableObject {
         currentGuess = ""
     }
     
+    private func updateRevealedPositionsFromGuess(_ guess: String) {
+        for (index, char) in guess.enumerated() {
+            if index < targetWord.count &&
+               targetWord[targetWord.index(targetWord.startIndex, offsetBy: index)] == char {
+                revealedPositions.insert(index)
+            }
+        }
+    }
+    
+    func useJoker() {
+        let unrevealedPositions = Set(0..<wordLength).subtracting(revealedPositions)
+        
+        if let randomPosition = unrevealedPositions.randomElement() {
+            revealedPositions.insert(randomPosition)
+            
+            removeLetterAtRevealedPosition(randomPosition)
+            
+            playSound(named: "success")
+            
+            jokerManager.revealedLetters.insert(randomPosition)
+        }
+    }
+    
+    private func removeLetterAtRevealedPosition(_ revealedPosition: Int) {
+        let nonRevealedPositions = (0..<wordLength).filter { !revealedPositions.contains($0) || $0 == revealedPosition }
+        
+        if let indexToRemove = nonRevealedPositions.firstIndex(of: revealedPosition) {
+            var currentGuessArray = Array(currentGuess)
+            
+            if indexToRemove < currentGuessArray.count {
+                currentGuessArray.remove(at: indexToRemove)
+                currentGuess = String(currentGuessArray)
+            }
+        }
+    }
+    
     private func checkGuess(_ guess: String) -> GuessResult {
         var letters: [LetterState] = []
         let targetArray = Array(targetWord)
         let guessArray = Array(guess)
         var targetCounts: [Character: Int] = [:]
         
-        // Hedef kelimedeki harf sayılarını hesapla
         for char in targetArray {
             targetCounts[char, default: 0] += 1
         }
         
-        // İlk geçiş: Doğru konumdaki harfleri işaretle
         for i in 0..<wordLength {
             if guessArray[i] == targetArray[i] {
                 letters.append(LetterState(letter: guessArray[i], state: .correct))
@@ -180,7 +255,6 @@ class GameModel: ObservableObject {
             }
         }
         
-        // İkinci geçiş: Yanlış konumdaki harfleri işaretle
         for i in 0..<wordLength {
             if letters[i].state == .unused {
                 let char = guessArray[i]
@@ -205,35 +279,53 @@ class GameModel: ObservableObject {
         statisticsManager.updateForLoss()
     }
     
-    // MARK: - Yardımcı Fonksiyonlar
     func getLetterForPosition(row: Int, col: Int) -> Character? {
-        // Joker ile açılmış harfleri kontrol et
-        if row == guesses.count && jokerManager.revealedLetters.contains(col) {
-            return Array(targetWord)[col]
-        }
-        
+
         if row < guesses.count {
             return guesses[row].letters[col].letter
-        } else if row == guesses.count && col < currentGuess.count {
-            return Array(currentGuess.turkishUppercased)[col] // ✅ Türkçe büyük harf
         }
+        
+        if row == guesses.count {
+            if revealedPositions.contains(col) {
+                let targetIndex = targetWord.index(targetWord.startIndex, offsetBy: col)
+                return targetWord[targetIndex]
+            }
+            
+            var currentGuessIndex = 0
+            for position in 0..<col {
+                if !revealedPositions.contains(position) {
+                    currentGuessIndex += 1
+                }
+            }
+            
+            let currentGuessArray = Array(currentGuess.turkishUppercased)
+            if currentGuessIndex < currentGuessArray.count {
+                return currentGuessArray[currentGuessIndex]
+            }
+        }
+        
         return nil
     }
     
     func getStateForPosition(row: Int, col: Int) -> LetterGuessState {
-        // Joker ile açılmış harfleri yeşil göster
-        if row == guesses.count && jokerManager.revealedLetters.contains(col) {
-            return .correct
-        }
-        
+    
         if row < guesses.count {
             return guesses[row].letters[col].state
         }
+        
+        if row == guesses.count {
+            if revealedPositions.contains(col) {
+                return .revealed
+            }
+        }
+        
         return .unused
     }
     
     func addLetter(_ letter: String) {
-        if currentGuess.count < wordLength && gameState == .playing && !isLoadingWord {
+        let remainingLettersNeeded = wordLength - revealedPositions.count
+        
+        if currentGuess.count < remainingLettersNeeded && gameState == .playing && !isLoadingWord {
             currentGuess += letter
             playSound(named: "click")
         }
@@ -258,7 +350,6 @@ class GameModel: ObservableObject {
                 if self.timeRemaining > 0 && self.gameState == .playing {
                     self.timeRemaining -= 1
                     
-                    // Son 10 saniyede uyarı sesi
                     if self.timeRemaining <= 10 && self.timeRemaining > 0 {
                         self.playSound(named: "tick")
                     }

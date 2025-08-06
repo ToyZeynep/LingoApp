@@ -5,7 +5,6 @@
 //  Created by Zeynep Toy on 14.06.2025.
 //
 
-
 import SwiftUI
 
 struct KeyboardView: View {
@@ -16,6 +15,10 @@ struct KeyboardView: View {
         ["A", "S", "D", "F", "G", "H", "J", "K", "L", "Ş", "İ"],
         ["Z", "X", "C", "V", "B", "N", "M", "Ö", "Ç"]
     ]
+    
+    private var remainingLettersNeeded: Int {
+        return game.wordLength - game.revealedPositions.count
+    }
     
     var body: some View {
         GeometryReader { geometry in
@@ -68,7 +71,7 @@ struct KeyboardView: View {
                         backgroundColor: .cyan,
                         textColor: .white
                     )
-                    .disabled(game.currentGuess.count != game.wordLength || game.gameState != .playing)
+                    .disabled(game.currentGuess.count != remainingLettersNeeded || game.gameState != .playing)
                     
                     ForEach(keyboardRows[2], id: \.self) { key in
                         Button(key) {
@@ -106,7 +109,7 @@ struct KeyboardView: View {
             for letterState in guess.letters {
                 if letterState.letter == keyChar {
                     switch letterState.state {
-                    case .correct:
+                    case .correct, .revealed:
                         return .cyan
                     case .wrongPosition:
                         return .orange
@@ -129,7 +132,7 @@ struct KeyboardView: View {
             for letterState in guess.letters {
                 if letterState.letter == keyChar {
                     switch letterState.state {
-                    case .correct, .wrong, .wrongPosition:
+                    case .correct, .wrong, .wrongPosition, .revealed:
                         return .white
                     case .unused:
                         continue

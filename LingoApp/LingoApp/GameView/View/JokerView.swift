@@ -5,7 +5,6 @@
 //  Created by Zeynep Toy on 14.06.2025.
 //
 
-
 import SwiftUI
 import AVFoundation
 
@@ -56,18 +55,53 @@ struct JokerCompactView: View {
         }
     }
     
+    // ✅ DÜZELTME: Yeni useJoker fonksiyonu
     private func useJoker(_ type: JokerType) {
-        let success = game.jokerManager.useJoker(type, targetWord: game.targetWord, gameModel: game)
+        // Joker sayısını kontrol et
+        guard game.jokerManager.jokers.count(for: type) > 0 else {
+            // Ses ayarını kontrol et
+            if game.soundEnabled {
+                AudioServicesPlaySystemSound(1053)
+            }
+            return
+        }
+        
+        // Joker sayısını azalt
+        let success = game.jokerManager.jokers.use(type)
         
         if success {
-            // Ses ayarını kontrol et
+            // Joker türüne göre aksiyonu gerçekleştir
+            switch type {
+            case .revealLetter:
+                game.useJoker() // ✅ GameModel'deki useJoker fonksiyonunu çağır
+                
+            case .removeLetter:
+                // Yanlış harfleri kaldır (eski mantık)
+                let alphabet = "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ"
+                let targetLetters = Set(game.targetWord)
+                
+                for char in alphabet {
+                    if !targetLetters.contains(char) {
+                        game.jokerManager.removedLetters.insert(char)
+                    }
+                }
+                
+            case .extraTime:
+                game.addExtraTime(30) // 30 saniye ekle
+            }
+            
+            // Kullanılan jokeri işaretle
+            game.jokerManager.usedJokersInCurrentGame.insert(type)
+            game.jokerManager.saveJokers()
+            
+            // Başarı sesi
             if game.soundEnabled {
                 AudioServicesPlaySystemSound(1057)
                 let impactFeedback = UIImpactFeedbackGenerator(style: .light)
                 impactFeedback.impactOccurred()
             }
         } else {
-            // Ses ayarını kontrol et
+            // Hata sesi
             if game.soundEnabled {
                 AudioServicesPlaySystemSound(1053)
             }

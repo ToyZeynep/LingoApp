@@ -20,6 +20,7 @@ enum LetterGuessState {
     case wrongPosition // Doğru harf, yanlış konum (sarı)
     case wrong        // Yanlış harf (gri)
     case unused       // Henüz kullanılmamış
+    case revealed
 }
 
 // MARK: - Veri Modelleri

@@ -225,7 +225,7 @@ struct JokerShopView: View {
         adMobManager.showRewardedAdWithFallback { [self] success in
             DispatchQueue.main.async {
                 if success, let jokerType = selectedJokerType {
-                    let rewardAmount = Int.random(in: 1...3)
+                    let rewardAmount = 10
                     jokerManager.addJoker(jokerType, count: rewardAmount)
                     
                     rewardMessage = "\(jokerType.title) jokerinden \(rewardAmount) adet kazandınız!"

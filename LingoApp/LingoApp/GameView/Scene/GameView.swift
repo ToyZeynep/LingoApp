@@ -102,8 +102,12 @@ struct GameView: View {
         }
         .onChange(of: game.gameState) { newState in
             if newState != .playing {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                if newState == .won {
                     showGameOver = true
+                } else {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                        showGameOver = true
+                    }
                 }
             }
         }
