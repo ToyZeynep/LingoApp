@@ -12,7 +12,6 @@ import SwiftUI
 enum JokerType: String, CaseIterable, Codable {
     case revealLetter = "reveal_letter"
     case removeLetter = "remove_letter"
-    case showHint = "show_hint"
     case extraTime = "extra_time"
     
     var title: String {
@@ -21,8 +20,6 @@ enum JokerType: String, CaseIterable, Codable {
             return "Harf Göster"
         case .removeLetter:
             return "Harf Sil"
-        case .showHint:
-            return "İpucu"
         case .extraTime:
             return "Ekstra Süre"
         }
@@ -34,8 +31,6 @@ enum JokerType: String, CaseIterable, Codable {
             return "lightbulb.fill"
         case .removeLetter:
             return "xmark.circle.fill"
-        case .showHint:
-            return "questionmark.circle.fill"
         case .extraTime:
             return "clock.arrow.circlepath"
         }
@@ -47,8 +42,6 @@ enum JokerType: String, CaseIterable, Codable {
             return .yellow.opacity(0.95)
         case .removeLetter:
             return .red.opacity(0.9)
-        case .showHint:
-            return .blue.opacity(0.9)
         case .extraTime:
             return .green.opacity(0.9)
         }
@@ -60,8 +53,6 @@ enum JokerType: String, CaseIterable, Codable {
             return .yellow
         case .removeLetter:
             return .red
-        case .showHint:
-            return .blue
         case .extraTime:
             return .green
         }
@@ -73,8 +64,6 @@ enum JokerType: String, CaseIterable, Codable {
             return "Doğru bir harfi gösterir"
         case .removeLetter:
             return "Yanlış harfleri klavyeden kaldırır"
-        case .showHint:
-            return "Kelimenin anlamını gösterir"
         case .extraTime:
             return "30 saniye ekstra süre verir"
         }
@@ -85,7 +74,6 @@ enum JokerType: String, CaseIterable, Codable {
 struct JokerData: Codable {
     var revealLetter: Int = 3
     var removeLetter: Int = 2
-    var showHint: Int = 2
     var extraTime: Int = 2
     
     mutating func use(_ type: JokerType) -> Bool {
@@ -95,16 +83,13 @@ struct JokerData: Codable {
                 revealLetter -= 1
                 return true
             }
+            
         case .removeLetter:
             if removeLetter > 0 {
                 removeLetter -= 1
                 return true
             }
-        case .showHint:
-            if showHint > 0 {
-                showHint -= 1
-                return true
-            }
+            
         case .extraTime:
             if extraTime > 0 {
                 extraTime -= 1
@@ -120,8 +105,6 @@ struct JokerData: Codable {
             revealLetter += count
         case .removeLetter:
             removeLetter += count
-        case .showHint:
-            showHint += count
         case .extraTime:
             extraTime += count
         }
@@ -133,8 +116,6 @@ struct JokerData: Codable {
             return revealLetter
         case .removeLetter:
             return removeLetter
-        case .showHint:
-            return showHint
         case .extraTime:
             return extraTime
         }
@@ -147,8 +128,6 @@ class JokerManager: ObservableObject {
     @Published var usedJokersInCurrentGame: Set<JokerType> = []
     @Published var revealedLetters: Set<Int> = []
     @Published var removedLetters: Set<Character> = []
-    @Published var currentHint: String = ""
-    @Published var showHintPopup = false
     
     private let userDefaults = UserDefaults.standard
     private let jokersKey = "SavedJokers"
@@ -171,6 +150,11 @@ class JokerManager: ObservableObject {
         }
     }
     
+    func addJoker(_ type: JokerType, count: Int = 1) {
+          jokers.add(type, count: count)
+          saveJokers()
+      }
+    
     // MARK: - Joker Kullanımı
     func useJoker(_ type: JokerType, targetWord: String, gameModel: GameModel) -> Bool {
         guard jokers.use(type) else { return false }
@@ -182,8 +166,6 @@ class JokerManager: ObservableObject {
             revealRandomLetter(in: targetWord)
         case .removeLetter:
             removeWrongLetters(targetWord: targetWord, gameModel: gameModel)
-        case .showHint:
-            showHint(for: targetWord)
         case .extraTime:
             gameModel.addExtraTime(30) // 30 saniye ekle
         }
@@ -210,35 +192,15 @@ class JokerManager: ObservableObject {
         }
     }
     
-    private func showHint(for word: String) {
-        // Basit ipucu sistemi - gerçek uygulamada sözlük API'si kullanılabilir
-        let hints: [String: String] = [
-            "ELMAS": "Çok değerli, parlak taş",
-            "KITAP": "Okumak için kullanılan nesne",
-            "BAHÇE": "Çiçek ve bitkilerin yetiştirildiği yer",
-            "ÇEVRE": "Etrafımızda bulunan ortam",
-            "DÜNYA": "Yaşadığımız gezegen",
-            "GÜNEŞ": "Gündüz ışık veren yıldız",
-            "DENIZ": "Büyük tuzlu su kütlesi",
-            "ORMAN": "Ağaçların yoğun olduğu alan"
-        ]
-        
-        currentHint = hints[word] ?? "Bu kelime hakkında ipucu bulunamadı"
-        showHintPopup = true
-    }
-    
     // MARK: - Oyun Sıfırlama
     func resetForNewGame() {
         usedJokersInCurrentGame.removeAll()
         revealedLetters.removeAll()
         removedLetters.removeAll()
-        currentHint = ""
-        showHintPopup = false
     }
     
     // MARK: - Reklam ile Joker Kazanma
     func earnJokersFromAd() {
-        // Reklam izlendikten sonra joker ver
         let randomJoker = JokerType.allCases.randomElement() ?? .revealLetter
         jokers.add(randomJoker, count: 1)
         saveJokers()
