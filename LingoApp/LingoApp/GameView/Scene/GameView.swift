@@ -127,6 +127,20 @@ struct GameView: View {
                 Text("Doğru kelime: \(game.targetWord)")
             }
         }
+        .alert("🎁 Joker Kazandın!", isPresented: $game.showJokerRewardAlert) {
+            Button("Harika!") {
+                game.showJokerRewardAlert = false
+            }
+        } message: {
+            if let jokerType = game.rewardedJokerType {
+                Text("""
+                Tebrikler! \(game.totalCorrectGuesses). doğru tahminin için 
+                \(jokerType.title) jokeri kazandın!
+                
+                Sonraki ödül için \(game.getProgressToNextReward().needed) doğru tahmin daha!
+                """)
+            }
+        }
     }
 }
 
