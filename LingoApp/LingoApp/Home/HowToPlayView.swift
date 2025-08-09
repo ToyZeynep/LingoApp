@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct HowToPlayView: View {
-    @Environment(\.dismiss) private var dismiss
+    var onDismiss: (() -> Void)?
     @State private var currentPage = 0
     
     var body: some View {
@@ -27,17 +27,6 @@ struct HowToPlayView: View {
                 .ignoresSafeArea()
                 
                 VStack(spacing: 0) {
-                    // Page indicator
-                    HStack(spacing: 8) {
-                        ForEach(0..<tutorialPages.count, id: \.self) { index in
-                            Circle()
-                                .fill(currentPage == index ? .cyan : .white.opacity(0.3))
-                                .frame(width: 8, height: 8)
-                                .animation(.easeInOut(duration: 0.3), value: currentPage)
-                        }
-                    }
-                    .padding(.top, 20)
-                    
                     // Tutorial content
                     TabView(selection: $currentPage) {
                         ForEach(0..<tutorialPages.count, id: \.self) { index in
@@ -48,47 +37,60 @@ struct HowToPlayView: View {
                     .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                     .animation(.easeInOut, value: currentPage)
                     
-                    // Navigation buttons
-                    HStack {
-                        if currentPage > 0 {
-                            Button("Geri") {
-                                withAnimation {
-                                    currentPage -= 1
-                                }
+                    // Bottom section with page indicator and navigation
+                    VStack(spacing: 20) {
+                        // Page indicator - ALT KISIMDA
+                        HStack(spacing: 8) {
+                            ForEach(0..<tutorialPages.count, id: \.self) { index in
+                                Circle()
+                                    .fill(currentPage == index ? .cyan : .white.opacity(0.3))
+                                    .frame(width: 8, height: 8)
+                                    .animation(.easeInOut(duration: 0.3), value: currentPage)
                             }
-                            .foregroundColor(.cyan)
-                            .font(.system(size: 16, weight: .medium))
                         }
                         
-                        Spacer()
-                        
-                        if currentPage < tutorialPages.count - 1 {
-                            Button("İleri") {
-                                withAnimation {
-                                    currentPage += 1
+                        // Navigation buttons
+                        HStack {
+                            if currentPage > 0 {
+                                Button("Geri") {
+                                    withAnimation {
+                                        currentPage -= 1
+                                    }
                                 }
+                                .foregroundColor(.cyan)
+                                .font(.system(size: 16, weight: .medium))
                             }
-                            .foregroundColor(.cyan)
-                            .font(.system(size: 16, weight: .medium))
-                        } else {
-                            Button("Başla!") {
-                                dismiss()
-                            }
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundColor(.white)
-                            .padding(.horizontal, 20)
-                            .padding(.vertical, 8)
-                            .background(
-                                LinearGradient(
-                                    colors: [.cyan, .blue],
-                                    startPoint: .leading,
-                                    endPoint: .trailing
+                            
+                            Spacer()
+                            
+                            if currentPage < tutorialPages.count - 1 {
+                                Button("İleri") {
+                                    withAnimation {
+                                        currentPage += 1
+                                    }
+                                }
+                                .foregroundColor(.cyan)
+                                .font(.system(size: 16, weight: .medium))
+                            } else {
+                                Button("Başla!") {
+                                    onDismiss?()
+                                }
+                                .font(.system(size: 16, weight: .semibold))
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 20)
+                                .padding(.vertical, 8)
+                                .background(
+                                    LinearGradient(
+                                        colors: [.cyan, .blue],
+                                        startPoint: .leading,
+                                        endPoint: .trailing
+                                    )
                                 )
-                            )
-                            .cornerRadius(20)
+                                .cornerRadius(20)
+                            }
                         }
+                        .padding(.horizontal, 30)
                     }
-                    .padding(.horizontal, 30)
                     .padding(.bottom, 30)
                 }
             }
@@ -96,8 +98,8 @@ struct HowToPlayView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Kapat") {
-                        dismiss()
+                    Button("Atla") {
+                        onDismiss?()
                     }
                     .foregroundColor(.cyan)
                     .font(.system(size: 16, weight: .semibold))
@@ -204,7 +206,7 @@ struct BasicRulesView: View {
             VStack(alignment: .leading, spacing: 12) {
                 RuleItem(number: "1", text: "Gizli kelimeyi tahmin etmeye çalış")
                 RuleItem(number: "2", text: "Her tahmin geçerli bir Türkçe kelime olmalı")
-                RuleItem(number: "3", text: "6 tahmin hakkın var")
+                RuleItem(number: "3", text: "Tahmin hakkın zorluk seviyesine göre değişir")
                 RuleItem(number: "4", text: "Süre dolmadan kelimeyi bul!")
             }
         }
@@ -226,14 +228,14 @@ struct LetterColorsView: View {
         VStack(spacing: 20) {
             ColorExampleRow(
                 letter: "E",
-                color: .green,
+                color: .cyan,
                 title: "Doğru Harf & Doğru Yer",
                 description: "Harf kelimede var ve doğru yerde"
             )
             
             ColorExampleRow(
                 letter: "L",
-                color: .yellow,
+                color: .orange,
                 title: "Doğru Harf & Yanlış Yer",
                 description: "Harf kelimede var ama yanlış yerde"
             )
