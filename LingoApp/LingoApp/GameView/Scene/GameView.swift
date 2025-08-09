@@ -116,6 +116,10 @@ struct GameView: View {
             Button("Yeni Oyun") {
                 game.startNewGame()
             }
+            
+            Button("Çıkış", role: .cancel) {
+                onBackToMenu()
+            }
         } message: {
             if game.gameState == .won {
                 Text("Doğru kelime: \(game.targetWord)\n\(game.guesses.count) tahminde buldunuz!")
