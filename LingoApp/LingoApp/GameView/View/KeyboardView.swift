@@ -55,9 +55,14 @@ struct KeyboardView: View {
                                 textColor: .white
                             )
                             .disabled(game.currentGuess.count != remainingLettersNeeded || game.gameState != .playing)
-                        } else if !game.jokerManager.removedLetters.contains(Character(key)) {
+                        } else {
+                            // Normal harf tuşları - silinen harfler gri gösterilecek
+                            let isRemoved = game.jokerManager.removedLetters.contains(Character(key))
+                            
                             Button(action: {
-                                game.addLetter(key)
+                                if !isRemoved {
+                                    game.addLetter(key)
+                                }
                             }) {
                                 Text(key)
                             }
@@ -69,10 +74,23 @@ struct KeyboardView: View {
                                     (UIScreen.main.bounds.width - 32) / 11.5,
                                 height: 50,
                                 fontSize: 18,
-                                backgroundColor: getKeyColor(for: key),
-                                textColor: getKeyTextColor(for: key)
+                                backgroundColor: isRemoved ?
+                                    .gray.opacity(0.3) :  // Silinen harfler soluk gri
+                                    getKeyColor(for: key),
+                                textColor: isRemoved ?
+                                    .gray.opacity(0.5) :  // Silinen harf metni de soluk
+                                    getKeyTextColor(for: key)
                             )
-                            .disabled(game.gameState != .playing)
+                            .disabled(game.gameState != .playing || isRemoved)
+                            .overlay(
+                                // Silinen harfler için çarpı işareti (opsiyonel)
+                                isRemoved ?
+                                Image(systemName: "xmark")
+                                    .font(.system(size: 10, weight: .bold))
+                                    .foregroundColor(.red.opacity(0.3))
+                                    .offset(x: 12, y: -12)
+                                : nil
+                            )
                         }
                     }
                 }
