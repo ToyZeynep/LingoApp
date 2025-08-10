@@ -10,12 +10,16 @@ import SwiftUI
 
 struct HowToPlayView: View {
     var onDismiss: (() -> Void)?
+    @Environment(\.dismiss) private var dismiss
     @State private var currentPage = 0
+
+    private var isFirstLaunch: Bool {
+        !UserDefaults.standard.bool(forKey: "HasSeenTutorial")
+    }
     
     var body: some View {
         NavigationView {
             ZStack {
-                // Background gradient
                 LinearGradient(
                     gradient: Gradient(colors: [
                         Color(red: 0.1, green: 0.1, blue: 0.3),
@@ -73,6 +77,7 @@ struct HowToPlayView: View {
                                 .font(.system(size: 16, weight: .medium))
                             } else {
                                 Button("Başla!") {
+                                    dismiss()
                                     onDismiss?()
                                 }
                                 .font(.system(size: 16, weight: .semibold))
@@ -97,12 +102,23 @@ struct HowToPlayView: View {
             .navigationTitle("Nasıl Oynanır")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Atla") {
-                        onDismiss?()
+                if isFirstLaunch {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button("Atla") {
+                            onDismiss?()
+                        }
+                        .foregroundColor(.cyan)
+                        .font(.system(size: 16, weight: .semibold))
                     }
-                    .foregroundColor(.cyan)
-                    .font(.system(size: 16, weight: .semibold))
+                }
+                if !isFirstLaunch {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button("Kapat") {
+                            dismiss()
+                        }
+                        .foregroundColor(.cyan)
+                        .font(.system(size: 16, weight: .semibold))
+                    }
                 }
             }
         }

@@ -15,6 +15,8 @@ struct GameView: View {
     @StateObject private var game: GameModel
     @State private var showStatistics = false
     @State private var showGameOver = false
+    @State private var showInvalidWord = false
+    @State private var showJokerReward = false
     
     init(difficulty: DifficultyLevel, soundEnabled: Binding<Bool>, onBackToMenu: @escaping () -> Void) {
         self.difficulty = difficulty
@@ -88,6 +90,60 @@ struct GameView: View {
                     }
                 }
             }
+            
+            // Custom Alert'ler
+            if showInvalidWord {
+                CustomAlertView(
+                             title: "Geçersiz Kelime",
+                             message: "Lütfen geçerli bir Türkçe kelime girin.",
+                             primaryButtonTitle: "Tamam",
+                             primaryAction: {
+                                 game.showInvalidWordAlert = false
+                             },
+                             icon: "exclamationmark.triangle.fill",
+                             iconColor: .orange,
+                             isPresented: $showInvalidWord
+                         )
+            }
+            
+            if showGameOver {
+                CustomAlertView(
+                    title: game.gameState == .won ? "Tebrikler! 🎉" : "Oyun Bitti 😔",
+                    message: game.gameState == .won ?
+                        "Kelimeyi \(game.guesses.count + 1) tahminde buldun!\n\nDoğru kelime: \(game.targetWord)" :
+                        "Doğru kelime: \(game.targetWord)",
+                    primaryButtonTitle: "Yeni Oyun",
+                    primaryAction: {
+                        game.startNewGame()
+                    },
+                    secondaryButtonTitle: "Ana Menü",
+                    secondaryAction: {
+                        onBackToMenu()
+                    },
+                    icon: game.gameState == .won ? "trophy.fill" : "gamecontroller.fill",
+                    iconColor: game.gameState == .won ? .yellow : .purple,
+                    isPresented: $showGameOver
+                )
+            }
+            
+            if showJokerReward {
+                if let jokerType = game.rewardedJokerType {
+                    CustomAlertView(
+                        title: "Joker Kazandın! 🎁",
+                        message: """
+                        \(game.totalCorrectGuesses). doğru tahminin için
+                        \(jokerType.title) jokeri kazandın!
+                        
+                        Sonraki ödül için \(game.getProgressToNextReward().needed) tahmin daha!
+                        """,
+                        primaryButtonTitle: "Harika!",
+                        primaryAction: {},
+                        icon: "gift.fill",
+                        iconColor: jokerType.brightColor,
+                        isPresented: $showJokerReward
+                    )
+                }
+            }
         }
         .onAppear {
             game.soundEnabled = soundEnabled
@@ -95,10 +151,8 @@ struct GameView: View {
         .onChange(of: soundEnabled) { newValue in
             game.soundEnabled = newValue
         }
-        .alert("Geçersiz Kelime", isPresented: $game.showInvalidWordAlert) {
-            Button("Tamam") { }
-        } message: {
-            Text("Lütfen geçerli bir Türkçe kelime girin.")
+        .onChange(of: game.showInvalidWordAlert) { newValue in
+            showInvalidWord = newValue
         }
         .onChange(of: game.gameState) { newState in
             if newState != .playing {
@@ -111,34 +165,10 @@ struct GameView: View {
                 }
             }
         }
-        .alert(game.gameState == .won ? "Tebrikler! 🎉" : "Oyun Bitti 😔",
-               isPresented: $showGameOver) {
-            Button("Yeni Oyun") {
-                game.startNewGame()
-            }
-            
-            Button("Çıkış", role: .cancel) {
-                onBackToMenu()
-            }
-        } message: {
-            if game.gameState == .won {
-                Text("Doğru kelime: \(game.targetWord)\n\(game.guesses.count) tahminde buldunuz!")
-            } else {
-                Text("Doğru kelime: \(game.targetWord)")
-            }
-        }
-        .alert("🎁 Joker Kazandın!", isPresented: $game.showJokerRewardAlert) {
-            Button("Harika!") {
+        .onChange(of: game.showJokerRewardAlert) { newValue in
+            showJokerReward = newValue
+            if !newValue {
                 game.showJokerRewardAlert = false
-            }
-        } message: {
-            if let jokerType = game.rewardedJokerType {
-                Text("""
-                Tebrikler! \(game.totalCorrectGuesses). doğru tahminin için 
-                \(jokerType.title) jokeri kazandın!
-                
-                Sonraki ödül için \(game.getProgressToNextReward().needed) doğru tahmin daha!
-                """)
             }
         }
     }

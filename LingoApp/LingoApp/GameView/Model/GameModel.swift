@@ -477,7 +477,7 @@ class GameModel: ObservableObject {
             
         case "tap":
             // Kelime gönderme - pozitif feedback
-            AudioServicesPlaySystemSound(1519) // Tweet sent sound - çok güzel
+            AudioServicesPlaySystemSound(1123) // Tweet sent sound - çok güzel
             
         case "success":
             // Başarı sesi - daha modern ve hoş
@@ -489,7 +489,7 @@ class GameModel: ObservableObject {
             
         case "failure":
             // Başarısızlık - daha yumuşak
-            AudioServicesPlaySystemSound(1521) // Disappointment - not harsh
+            AudioServicesPlaySystemSound(1113) // Disappointment - not harsh
             // Alternatif: 1073 (Tink), 1113 (Tock)
             // Haptic feedback ekle
             let notificationFeedback = UINotificationFeedbackGenerator()
