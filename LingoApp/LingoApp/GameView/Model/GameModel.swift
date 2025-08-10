@@ -76,6 +76,8 @@ class GameModel: ObservableObject {
         revealedPositions.removeAll()
         timeRemaining = gameDuration
         
+        playSound(named: "gameStart")
+        
         wordUploader.fetchRandomWord(length: wordLength) { [weak self] word in
             DispatchQueue.main.async {
                 guard let self = self else { return }
@@ -197,7 +199,7 @@ class GameModel: ObservableObject {
             stopTimer()
             playSound(named: "success")
             updateStatisticsForWin()
-            checkAndRewardJoker() // Joker ödülünü kontrol et
+            checkAndRewardJoker()
         } else if guesses.count >= maxGuesses {
             gameState = .lost
             stopTimer()
@@ -226,8 +228,6 @@ class GameModel: ObservableObject {
             revealedPositions.insert(randomPosition)
             
             removeLetterAtRevealedPosition(randomPosition)
-            
-            playSound(named: "reveal")
             
             jokerManager.revealedLetters.insert(randomPosition)
         }
@@ -287,7 +287,7 @@ class GameModel: ObservableObject {
         UserDefaults.standard.set(totalCorrectGuesses, forKey: "TotalCorrectGuesses")
         
         // Her 10 doğru tahminde ödül ver
-        if totalCorrectGuesses % 3 == 0 && totalCorrectGuesses > 0 {
+        if totalCorrectGuesses % 10 == 0 && totalCorrectGuesses > 0 {
             // Rastgele bir joker türü seç
             let jokerTypes = JokerType.allCases
             let randomJoker = jokerTypes.randomElement() ?? .revealLetter
@@ -459,76 +459,41 @@ class GameModel: ObservableObject {
     
     func addExtraTime(_ seconds: TimeInterval = 30) {
         timeRemaining += seconds
-        playSound(named: "joker")
     }
     
-    // MARK: - Ses Efektleri
     private func playSound(named soundName: String) {
         guard soundEnabled else { return }
-        
+
         switch soundName {
-        case "click":
-            // Modern tıklama sesi - daha yumuşak
-            AudioServicesPlaySystemSound(1104) // Soft click
-            
-        case "delete":
-            // Silme sesi - soft delete
-            AudioServicesPlaySystemSound(1156) // Modern delete
-            
-        case "tap":
-            // Kelime gönderme - pozitif feedback
-            AudioServicesPlaySystemSound(1123) // Tweet sent sound - çok güzel
-            
+        case "click":   SoundEngine.shared.play(.click)
+        case "delete":  SoundEngine.shared.play(.delete)
+        case "tap":     SoundEngine.shared.play(.tap)
         case "success":
-            // Başarı sesi - daha modern ve hoş
-            AudioServicesPlaySystemSound(1394) // Sparkle/Magic success - çok güzel
-            // Alternatif: 1407 (Bloom), 1115 (Glass), 1322 (Whoosh)
-            // Haptic feedback ekle
-            let impactFeedback = UIImpactFeedbackGenerator(style: .heavy)
-            impactFeedback.impactOccurred()
-            
+            SoundEngine.shared.play(.success) {
+                UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+            }
         case "failure":
-            // Başarısızlık - daha yumuşak
-            AudioServicesPlaySystemSound(1113) // Disappointment - not harsh
-            // Alternatif: 1073 (Tink), 1113 (Tock)
-            // Haptic feedback ekle
-            let notificationFeedback = UINotificationFeedbackGenerator()
-            notificationFeedback.notificationOccurred(.error)
-            
-        case "tick":
-            // Zaman azalırken - metronom tik
-            AudioServicesPlaySystemSound(1130) // Clock tick
-            
-        case "joker":
-            // Joker kullanma - sihirli ses
-            AudioServicesPlaySystemSound(1115) // Glass/Crystal sound
-            let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
-            impactFeedback.impactOccurred()
-            
-        case "reveal":
-            // Harf açma - pop sesi
-            AudioServicesPlaySystemSound(1520) // Anticipate/Reveal
-            
+            SoundEngine.shared.play(.failure) {
+                UINotificationFeedbackGenerator().notificationOccurred(.error)
+            }
+        case "tick":    SoundEngine.shared.play(.tick)
         case "invalid":
-            // Geçersiz kelime - nazik uyarı
-            AudioServicesPlaySystemSound(1114) // Low pitch warning
-            let notificationFeedback = UINotificationFeedbackGenerator()
-            notificationFeedback.notificationOccurred(.warning)
-            
+            SoundEngine.shared.play(.invalid) {
+                UINotificationFeedbackGenerator().notificationOccurred(.warning)
+            }
         case "reward":
-            // Ödül kazanma - kutlama
-            AudioServicesPlaySystemSound(1336) // Update/Achievement
-            let impactFeedback = UIImpactFeedbackGenerator(style: .light)
-            impactFeedback.impactOccurred()
-            
-        case "countdown":
-            // Son 10 saniye - heyecan
-            AudioServicesPlaySystemSound(1074) // Subtle tick
-            
+            SoundEngine.shared.play(.reward) {
+                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            }
+        case "gameStart":
+            SoundEngine.shared.play(.start) {
+                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            }
         default:
-            AudioServicesPlaySystemSound(1104)
+            SoundEngine.shared.play(.click)
         }
     }
+
     
     deinit {
         stopTimer()

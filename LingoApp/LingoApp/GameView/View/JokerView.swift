@@ -40,10 +40,6 @@ struct JokerCompactView: View {
         if game.jokerManager.jokers.count(for: type) == 0 {
             selectedJokerType = type
             showJokerShop = true
-            
-            if game.soundEnabled {
-                AudioServicesPlaySystemSound(1053)
-            }
             return
         }
         
@@ -52,9 +48,6 @@ struct JokerCompactView: View {
     
     private func useJoker(_ type: JokerType) {
         guard game.jokerManager.jokers.count(for: type) > 0 else {
-            if game.soundEnabled {
-                AudioServicesPlaySystemSound(1053)
-            }
             return
         }
         
@@ -97,15 +90,6 @@ struct JokerCompactView: View {
             game.jokerManager.usedJokersInCurrentGame.insert(type)
             game.jokerManager.saveJokers()
             
-            if game.soundEnabled {
-                AudioServicesPlaySystemSound(1057)
-                let impactFeedback = UIImpactFeedbackGenerator(style: .light)
-                impactFeedback.impactOccurred()
-            }
-        } else {
-            if game.soundEnabled {
-                AudioServicesPlaySystemSound(1053)
-            }
         }
     }
 }
