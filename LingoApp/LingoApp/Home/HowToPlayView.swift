@@ -10,11 +10,19 @@ import SwiftUI
 
 struct HowToPlayView: View {
     var onDismiss: (() -> Void)?
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.presentationMode) var presentationMode
     @State private var currentPage = 0
-
+    
     private var isFirstLaunch: Bool {
         !UserDefaults.standard.bool(forKey: "HasSeenTutorial")
+    }
+    
+    private func dismissView() {
+        if let onDismiss = onDismiss {
+            onDismiss()
+        } else {
+            presentationMode.wrappedValue.dismiss()
+        }
     }
     
     var body: some View {
@@ -31,7 +39,6 @@ struct HowToPlayView: View {
                 .ignoresSafeArea()
                 
                 VStack(spacing: 0) {
-                    // Tutorial content
                     TabView(selection: $currentPage) {
                         ForEach(0..<tutorialPages.count, id: \.self) { index in
                             TutorialPageView(page: tutorialPages[index])
@@ -41,9 +48,7 @@ struct HowToPlayView: View {
                     .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                     .animation(.easeInOut, value: currentPage)
                     
-                    // Bottom section with page indicator and navigation
                     VStack(spacing: 20) {
-                        // Page indicator - ALT KISIMDA
                         HStack(spacing: 8) {
                             ForEach(0..<tutorialPages.count, id: \.self) { index in
                                 Circle()
@@ -53,7 +58,6 @@ struct HowToPlayView: View {
                             }
                         }
                         
-                        // Navigation buttons
                         HStack {
                             if currentPage > 0 {
                                 Button("Geri") {
@@ -77,8 +81,7 @@ struct HowToPlayView: View {
                                 .font(.system(size: 16, weight: .medium))
                             } else {
                                 Button("Başla!") {
-                                    dismiss()
-                                    onDismiss?()
+                                    dismissView()
                                 }
                                 .font(.system(size: 16, weight: .semibold))
                                 .foregroundColor(.white)
@@ -101,26 +104,15 @@ struct HowToPlayView: View {
             }
             .navigationTitle("Nasıl Oynanır")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                if isFirstLaunch {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button("Atla") {
-                            onDismiss?()
-                        }
+            .navigationBarItems(
+                trailing: Button(action: {
+                    dismissView()
+                }) {
+                    Text(isFirstLaunch ? "Atla" : "Kapat")
                         .foregroundColor(.cyan)
                         .font(.system(size: 16, weight: .semibold))
-                    }
                 }
-                if !isFirstLaunch {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button("Kapat") {
-                            dismiss()
-                        }
-                        .foregroundColor(.cyan)
-                        .font(.system(size: 16, weight: .semibold))
-                    }
-                }
-            }
+            )
         }
     }
 }
@@ -371,9 +363,9 @@ struct JokerExplanationRow: View {
 struct DifficultyLevelsView: View {
     var body: some View {
         VStack(spacing: 15) {
-            DifficultyRow(level: .easy, description: "4 harf • 6 tahmin • 3 dakika")
-            DifficultyRow(level: .medium, description: "5 harf • 5 tahmin • 2.5 dakika")
-            DifficultyRow(level: .hard, description: "6 harf • 4 tahmin • 2 dakika")
+            DifficultyRow(level: .easy, description: "4 harf • 6 tahmin • 2.5 dakika")
+            DifficultyRow(level: .medium, description: "5 harf • 6 tahmin • 2 dakika")
+            DifficultyRow(level: .hard, description: "6 harf • 6 tahmin • 1.5 dakika")
         }
     }
 }

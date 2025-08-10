@@ -462,7 +462,7 @@ class GameModel: ObservableObject {
     }
     
     private func playSound(named soundName: String) {
-        guard soundEnabled else { return }
+        guard SoundEngine.shared.enabled else { return }
 
         switch soundName {
         case "click":   SoundEngine.shared.play(.click)
