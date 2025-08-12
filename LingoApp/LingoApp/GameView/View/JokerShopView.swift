@@ -54,7 +54,7 @@ struct JokerShopView: View {
                     freeJokerSection
                     
                     // Premium satın alma bölümü
-                    premiumSection
+                   // premiumSection
                     
                     Spacer(minLength: 50)
                 }

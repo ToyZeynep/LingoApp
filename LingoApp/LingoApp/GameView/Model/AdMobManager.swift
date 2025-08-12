@@ -13,16 +13,12 @@ class AdMobManager: NSObject, ObservableObject {
     static let shared = AdMobManager()
     
     @Published var isRewardedAdReady = false
-    @Published var isInterstitialAdReady = false
     @Published var isLoading = false
     
     private var rewardedAd: RewardedAd?
-    private var interstitialAd: InterstitialAd?
     private var rewardCompletion: ((Bool) -> Void)?
     
-    // Test ID'leri - production'da gerçek ID'lerle değiştirin
-    private let rewardedAdUnitID = "ca-app-pub-3940256099942544/1712485313" // Test Rewarded
-    private let interstitialAdUnitID = "ca-app-pub-3940256099942544/4411468910" // Test Interstitial
+    private let rewardedAdUnitID = "ca-app-pub-7359263265391774/2506990592"
     
     override init() {
         super.init()
@@ -41,7 +37,6 @@ class AdMobManager: NSObject, ObservableObject {
             // Network bağlantısını kontrol et
             DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                 self?.loadRewardedAd()
-                self?.loadInterstitialAd()
             }
         }
     }
@@ -122,73 +117,7 @@ class AdMobManager: NSObject, ObservableObject {
             }
         }
     }
-    
-    // MARK: - Interstitial Ad (Bonus)
-    func loadInterstitialAd() {
-        let request = Request()
-        
-        InterstitialAd.load(with: interstitialAdUnitID, request: request) { [weak self] ad, error in
-            DispatchQueue.main.async {
-                if let error = error {
-                    print("Interstitial ad failed to load: \(error.localizedDescription)")
-                    self?.isInterstitialAdReady = false
-                    
-                    // Network hatası varsa 10 saniye sonra tekrar dene
-                    if error.localizedDescription.contains("network") ||
-                       error.localizedDescription.contains("connection") ||
-                       error.localizedDescription.contains("parse") {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 10.0) {
-                            self?.loadInterstitialAd()
-                        }
-                    }
-                    return
-                }
-                
-                self?.interstitialAd = ad
-                self?.interstitialAd?.fullScreenContentDelegate = self
-                self?.isInterstitialAdReady = true
-                print("✅ Interstitial ad loaded successfully")
-            }
-        }
-    }
-    
-    func showInterstitialAd() {
-        guard let interstitialAd = interstitialAd else {
-            print("Interstitial ad is not ready")
-            return
-        }
-        
-        // En üstteki view controller'ı bul
-        guard let rootViewController = findTopViewController() else {
-            print("Could not find top view controller")
-            return
-        }
-        
-        // Eğer zaten bir modal sunuyorsa çıkış yap
-        if rootViewController.presentedViewController != nil {
-            print("View controller is already presenting, skipping interstitial")
-            return
-        }
-        
-        interstitialAd.present(from: rootViewController)
-    }
-    
-    // MARK: - Banner Ad (isteğe bağlı)
-    func createBannerView() -> BannerView {
-        let bannerView = BannerView(adSize: AdSizeBanner)
-        bannerView.adUnitID = "ca-app-pub-3940256099942544/2435281174" // Test Banner
-        
-        // Root view controller'ı ayarla
-        if let rootViewController = findTopViewController() {
-            bannerView.rootViewController = rootViewController
-        }
-        
-        let request = Request()
-        bannerView.load(request)
-        
-        return bannerView
-    }
-    
+
     // MARK: - Helper Methods
     private func findTopViewController() -> UIViewController? {
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
@@ -234,14 +163,6 @@ extension AdMobManager: FullScreenContentDelegate {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                     self?.loadRewardedAd()
                 }
-            } else if ad is InterstitialAd {
-                // Interstitial ad kapatıldı - yeni reklam yükle
-                self?.interstitialAd = nil
-                self?.isInterstitialAdReady = false
-                
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                    self?.loadInterstitialAd()
-                }
             }
         }
     }
@@ -255,8 +176,6 @@ extension AdMobManager: FullScreenContentDelegate {
                 self?.rewardCompletion?(false)
                 self?.rewardCompletion = nil
                 self?.loadRewardedAd()
-            } else if ad is InterstitialAd {
-                self?.loadInterstitialAd()
             }
         }
     }
@@ -294,10 +213,6 @@ extension AdMobManager {
         return isRewardedAdReady && !isLoading
     }
     
-    var canShowInterstitialAd: Bool {
-        return isInterstitialAdReady
-    }
-    
     // Network durumunu kontrol et
     var isNetworkAvailable: Bool {
         return true // Şimdilik her zaman true döndür
@@ -326,14 +241,12 @@ extension AdMobManager {
     // Tüm reklamları yeniden yükle
     func reloadAllAds() {
         loadRewardedAd()
-        loadInterstitialAd()
     }
     
     // Debug bilgileri
     func getAdStatus() -> String {
         return """
         Rewarded Ad: \(isRewardedAdReady ? "Ready" : "Not Ready")
-        Interstitial Ad: \(isInterstitialAdReady ? "Ready" : "Not Ready")
         Loading: \(isLoading)
         """
     }

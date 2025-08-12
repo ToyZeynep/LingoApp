@@ -8,10 +8,10 @@
 
 import SwiftUI
 
-// MARK: - Zorluk Seçim Ekranı
 struct DifficultySelectionView: View {
     @Binding var selectedDifficulty: DifficultyLevel?
     @State private var animateCards = false
+    let onBack: () -> Void
     
     var body: some View {
         ZStack {
@@ -39,7 +39,37 @@ struct DifficultySelectionView: View {
             }
             
             VStack(spacing: 40) {
-                // Özgün başlık
+                HStack {
+                    Button(action: onBack) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "chevron.left.circle.fill")
+                                .font(.title2)
+                                .symbolRenderingMode(.hierarchical)
+                            Text("Geri")
+                                .font(.system(size: 16, weight: .medium))
+                        }
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 10)
+                        .background {
+                            Capsule()
+                                .fill(.ultraThinMaterial)
+                                .shadow(color: .black.opacity(0.15), radius: 8, x: 0, y: 4)
+                        }
+                        .overlay {
+                            Capsule()
+                                .stroke(.white.opacity(0.2), lineWidth: 1)
+                        }
+                    }
+                    .buttonStyle(.plain)
+                    .scaleEffect(1.0)
+                    .hoverEffect(.lift)
+                    
+                    Spacer()
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 10)
+                
                 VStack(spacing: 15) {
                     Text("🎯")
                         .font(.system(size: 50))
@@ -61,7 +91,6 @@ struct DifficultySelectionView: View {
                         .foregroundColor(.white.opacity(0.8))
                         .multilineTextAlignment(.center)
                 }
-                .padding(.top, 30)
                 
                 VStack(spacing: 25) {
                     ForEach(Array(DifficultyLevel.allCases.enumerated()), id: \.element) { index, difficulty in
@@ -88,7 +117,6 @@ struct DifficultySelectionView: View {
     }
 }
 
-// MARK: - Dikey Zorluk Kartı (Özgün Tasarım)
 struct DifficultyCardVertical: View {
     let difficulty: DifficultyLevel
     let onSelect: () -> Void
@@ -187,11 +215,13 @@ struct DifficultyCardVertical: View {
     }
 }
 
-// MARK: - Preview
 struct DifficultySelectionView_Previews: PreviewProvider {
     @State static var selectedDifficulty: DifficultyLevel? = nil
     
     static var previews: some View {
-        DifficultySelectionView(selectedDifficulty: $selectedDifficulty)
+        DifficultySelectionView(
+            selectedDifficulty: $selectedDifficulty,
+            onBack: {}
+        )
     }
 }
