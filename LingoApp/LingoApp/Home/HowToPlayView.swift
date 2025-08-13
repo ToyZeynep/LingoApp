@@ -114,6 +114,7 @@ struct HowToPlayView: View {
                 }
             )
         }
+        .navigationViewStyle(StackNavigationViewStyle())
     }
 }
 

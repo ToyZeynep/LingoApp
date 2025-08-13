@@ -93,26 +93,6 @@ struct StatisticsView: View {
                     .padding(.horizontal)
                     
                     Spacer()
-                    
-                    // Paylaş butonu
-                    if statisticsManager.statistics.gamesPlayed > 0 {
-                        Button("STATİSTİKLERİ PAYLAŞ") {
-                            shareStatistics()
-                        }
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(
-                            LinearGradient(
-                                colors: [.cyan, .blue],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                        .cornerRadius(12)
-                        .padding(.horizontal)
-                    }
                 }
                 .padding(.vertical)
             }
@@ -128,6 +108,7 @@ struct StatisticsView: View {
                 }
             }
         }
+        .navigationViewStyle(StackNavigationViewStyle())
     }
     
     private func shareStatistics() {

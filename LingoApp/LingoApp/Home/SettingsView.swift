@@ -76,6 +76,7 @@ struct SettingsView: View {
                 }
             }
         }
+        .navigationViewStyle(StackNavigationViewStyle())
         .onAppear {
             let v = UserDefaults.standard.object(forKey: "SoundEnabled") == nil
             ? true
