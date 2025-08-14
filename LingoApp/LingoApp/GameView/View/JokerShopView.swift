@@ -148,7 +148,7 @@ struct JokerShopView: View {
                 }
             }
             
-            Text("Reklam izleyerek ücretsiz joker kazanabilirsin! (Her reklam +10 joker)")
+            Text("Reklam izleyerek ücretsiz joker kazanabilirsin! (Her reklam +3 joker)")
                 .font(.system(size: 14))
                 .foregroundColor(.white.opacity(0.7))
             
@@ -229,7 +229,7 @@ struct JokerShopView: View {
         adMobManager.showRewardedAdWithFallback { [self] success in
             DispatchQueue.main.async {
                 if success, let jokerType = selectedJokerType {
-                    let rewardAmount = 10
+                    let rewardAmount = 3
                     jokerManager.addJoker(jokerType, count: rewardAmount)
                     
                     rewardMessage = "\(jokerType.title) jokerinden \(rewardAmount) adet kazandınız! 🎉"
@@ -257,7 +257,7 @@ struct JokerShopView: View {
             rewardMessage = "Başlangıç paketi satın alındı!"
         case .mega:
             JokerType.allCases.forEach { type in
-                jokerManager.addJoker(type, count: 10)
+                jokerManager.addJoker(type, count: 3)
             }
             rewardMessage = "Mega paket satın alındı!"
         }
