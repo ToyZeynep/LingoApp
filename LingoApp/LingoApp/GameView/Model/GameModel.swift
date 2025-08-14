@@ -78,12 +78,12 @@ class GameModel: ObservableObject {
         
         playSound(named: "gameStart")
         
-        wordUploader.fetchRandomWord(length: wordLength) { [weak self] word in
+        wordUploader.fetchRandomWordWithMeaning(length: wordLength) { [weak self] word in
             DispatchQueue.main.async {
                 guard let self = self else { return }
                 
                 if let word = word {
-                    self.targetWord = word.turkishUppercased
+                    self.targetWord = word.word.turkishUppercased
                     print("🎯 Yeni kelime: \(self.targetWord) (\(self.wordLength) harf)")
                     self.isLoadingWord = false
                     self.startTimer()
