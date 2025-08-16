@@ -18,7 +18,7 @@ class AdMobManager: NSObject, ObservableObject {
     private var rewardedAd: RewardedAd?
     private var rewardCompletion: ((Bool) -> Void)?
     
-    private let rewardedAdUnitID = "ca-app-pub-7359263265391774/2506990592"
+    private let rewardedAdUnitID = "ca-app-pub-7359263265391774/4270626269"
     
     override init() {
         super.init()
@@ -66,6 +66,8 @@ class AdMobManager: NSObject, ObservableObject {
                             self?.loadRewardedAd()
                         }
                     }
+                    
+                    self?.isRewardedAdReady = false
                     return
                 }
                 
