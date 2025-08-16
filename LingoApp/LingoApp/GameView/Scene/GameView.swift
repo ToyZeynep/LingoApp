@@ -59,51 +59,58 @@ struct GameView: View {
             .ignoresSafeArea()
             
             VStack(spacing: 0) {
-                ScrollView {
-                    VStack(spacing: 15) {
-                        if game.gameState == .playing {
-                            HStack {
-                                Button(action: onBackToMenu) {
-                                    HStack(spacing: 6) {
-                                        Image(systemName: "chevron.left.circle.fill")
-                                            .font(.system(size: 16))
-                                        Text("Geri")
-                                            .font(.system(size: 14, weight: .medium))
+                ScrollViewReader { proxy in
+                    ScrollView {
+                        VStack(spacing: 15) {
+                            if game.gameState == .playing {
+                                HStack {
+                                    Button(action: onBackToMenu) {
+                                        HStack(spacing: 6) {
+                                            Image(systemName: "chevron.left.circle.fill")
+                                                .font(.system(size: 16))
+                                            Text("Geri")
+                                                .font(.system(size: 14, weight: .medium))
+                                        }
+                                        .foregroundColor(.cyan.opacity(0.9))
                                     }
-                                    .foregroundColor(.cyan.opacity(0.9))
+                                    
+                                    Spacer()
                                 }
-                                
-                                Spacer()
+                                .padding(.horizontal)
+                                .padding(.top, 8)
                             }
-                            .padding(.horizontal)
-                            .padding(.top, 8)
+                            
+                            TimerProgressView(game: game)
+                                .padding(.horizontal)
+                            
+                            GameBoard(game: game)
+                                .padding(.horizontal)
+                            
+                            if game.showHintText {
+                                HintView(meaning: game.currentWordMeaning)
+                                    .padding(.horizontal)
+                                    .id("hintView")
+                            }
                         }
-                        
-                        TimerProgressView(game: game)
-                            .padding(.horizontal)
-                        
-                        GameBoard(game: game)
-                            .padding(.horizontal)
-                        
-                        KeyboardView(game: game)
-                            .padding(.bottom, 10)
+                    }
+                    .onChange(of: game.showHintText) { showHint in
+                        if showHint {
+                            withAnimation(.easeInOut(duration: 0.8)) {
+                                proxy.scrollTo("hintView", anchor: .bottom)
+                            }
+                        }
                     }
                 }
-            }
-            
-            // Custom Alert'ler
-            if showInvalidWord {
-                CustomAlertView(
-                             title: "Geçersiz Kelime",
-                             message: "Lütfen geçerli bir Türkçe kelime girin.",
-                             primaryButtonTitle: "Tamam",
-                             primaryAction: {
-                                 game.showInvalidWordAlert = false
-                             },
-                             icon: "exclamationmark.triangle.fill",
-                             iconColor: .orange,
-                             isPresented: $showInvalidWord
-                         )
+                
+                if game.showInvalidWordAlert {
+                     InvalidWordToast(game: game)
+                         .padding(.horizontal)
+                         .transition(.move(edge: .bottom).combined(with: .opacity))
+                 }
+                
+                KeyboardView(game: game)
+                    .padding(.bottom, 10)
+
             }
             
             if showGameOver {
@@ -315,5 +322,56 @@ struct GameBoard: View {
 extension Animation {
     static func blink(duration: Double = 1.0) -> Animation {
         Animation.easeInOut(duration: duration).repeatForever(autoreverses: true)
+    }
+}
+
+// MARK: - Invalid Word Toast
+struct InvalidWordToast: View {
+    @ObservedObject var game: GameModel
+    @State private var isVisible = false
+    
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.system(size: 16))
+                .foregroundColor(.orange)
+            
+            Text("Lütfen geçerli Türkçe bir kelime girin")
+                .font(.system(size: 14, weight: .medium))
+                .foregroundColor(.white)
+            
+            Spacer()
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(.orange.opacity(0.2))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(.orange.opacity(0.6), lineWidth: 1)
+                )
+                .shadow(color: .orange.opacity(0.3), radius: 8, x: 0, y: -2)
+        )
+        .scaleEffect(isVisible ? 1.0 : 0.9)
+        .opacity(isVisible ? 1.0 : 0.0)
+        .onAppear {
+         
+            UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+            
+            withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+                isVisible = true
+            }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+                withAnimation(.easeOut(duration: 0.3)) {
+                    isVisible = false
+                }
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    game.showInvalidWordAlert = false
+                }
+            }
+        }
     }
 }

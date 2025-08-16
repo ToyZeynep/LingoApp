@@ -13,6 +13,7 @@ enum JokerType: String, CaseIterable, Codable {
     case revealLetter = "reveal_letter"
     case removeLetter = "remove_letter"
     case extraTime = "extra_time"
+    case showHint = "show_hint"
     
     var title: String {
         switch self {
@@ -22,6 +23,8 @@ enum JokerType: String, CaseIterable, Codable {
             return "Harf Sil"
         case .extraTime:
             return "Ekstra Süre"
+        case .showHint:
+            return "İpucu Göster"
         }
     }
     
@@ -33,6 +36,8 @@ enum JokerType: String, CaseIterable, Codable {
             return "xmark.circle.fill"
         case .extraTime:
             return "clock.arrow.circlepath"
+        case .showHint:
+            return "questionmark.circle.fill"
         }
     }
     
@@ -44,6 +49,8 @@ enum JokerType: String, CaseIterable, Codable {
             return .red.opacity(0.9)
         case .extraTime:
             return .green.opacity(0.9)
+        case .showHint:
+            return .blue.opacity(0.9)
         }
     }
     
@@ -55,6 +62,8 @@ enum JokerType: String, CaseIterable, Codable {
             return .red
         case .extraTime:
             return .green
+        case .showHint:
+            return .blue
         }
     }
     
@@ -66,150 +75,81 @@ enum JokerType: String, CaseIterable, Codable {
             return "Yanlış harfleri klavyeden kaldırır"
         case .extraTime:
             return "30 saniye ekstra süre verir"
+        case .showHint:
+            return "Kelimenin anlamını gösterir"
         }
     }
 }
 
-// MARK: - Joker Verisi
-struct JokerData: Codable {
-    var revealLetter: Int = 3
-    var removeLetter: Int = 2
-    var extraTime: Int = 2
+// MARK: - Joker Stok Yönetimi
+struct JokerStock: Codable {
+    private var jokers: [JokerType: Int] = [:]
     
-    mutating func use(_ type: JokerType) -> Bool {
-        switch type {
-        case .revealLetter:
-            if revealLetter > 0 {
-                revealLetter -= 1
-                return true
-            }
-            
-        case .removeLetter:
-            if removeLetter > 0 {
-                removeLetter -= 1
-                return true
-            }
-            
-        case .extraTime:
-            if extraTime > 0 {
-                extraTime -= 1
-                return true
-            }
-        }
-        return false
-    }
-    
-    mutating func add(_ type: JokerType, count: Int = 1) {
-        switch type {
-        case .revealLetter:
-            revealLetter += count
-        case .removeLetter:
-            removeLetter += count
-        case .extraTime:
-            extraTime += count
-        }
+    init() {
+        // Başlangıç jokerleri
+        jokers[.revealLetter] = 2
+        jokers[.removeLetter] = 2
+        jokers[.extraTime] = 2
+        jokers[.showHint] = 2
     }
     
     func count(for type: JokerType) -> Int {
-        switch type {
-        case .revealLetter:
-            return revealLetter
-        case .removeLetter:
-            return removeLetter
-        case .extraTime:
-            return extraTime
+        return jokers[type] ?? 0
+    }
+    
+    mutating func add(_ type: JokerType, count: Int = 1) {
+        jokers[type, default: 0] += count
+    }
+    
+    mutating func use(_ type: JokerType) -> Bool {
+        guard let current = jokers[type], current > 0 else {
+            return false
         }
+        jokers[type] = current - 1
+        return true
     }
 }
 
 // MARK: - Joker Manager
 class JokerManager: ObservableObject {
-    @Published var jokers = JokerData()
-    @Published var usedJokersInCurrentGame: Set<JokerType> = []
+    @Published var jokers = JokerStock()
     @Published var revealedLetters: Set<Int> = []
     @Published var removedLetters: Set<Character> = []
-    
-    private let userDefaults = UserDefaults.standard
-    private let jokersKey = "SavedJokers"
+    @Published var usedJokersInCurrentGame: Set<JokerType> = []
     
     init() {
         loadJokers()
     }
     
-    // MARK: - Kayıt/Yükleme
-    func saveJokers() {
+    // Joker ekleme (reklam izleme sonrası)
+    func addJoker(_ type: JokerType, count: Int = 1) {
+        jokers.add(type, count: count)
+        saveJokers()
+    }
+    
+    // Joker kullanımı kontrol
+    func canUseJoker(_ type: JokerType) -> Bool {
+        return jokers.count(for: type) > 0
+    }
+    
+    // Yeni oyun başlarken temizlik
+    func resetForNewGame() {
+        revealedLetters.removeAll()
+        removedLetters.removeAll()
+        usedJokersInCurrentGame.removeAll()
+    }
+    
+    // MARK: - Persistence
+     func saveJokers() {
         if let encoded = try? JSONEncoder().encode(jokers) {
-            userDefaults.set(encoded, forKey: jokersKey)
+            UserDefaults.standard.set(encoded, forKey: "joker_stock")
         }
     }
     
     private func loadJokers() {
-        if let data = userDefaults.data(forKey: jokersKey),
-           let decoded = try? JSONDecoder().decode(JokerData.self, from: data) {
+        if let data = UserDefaults.standard.data(forKey: "joker_stock"),
+           let decoded = try? JSONDecoder().decode(JokerStock.self, from: data) {
             jokers = decoded
         }
-    }
-    
-    func addJoker(_ type: JokerType, count: Int = 1) {
-          jokers.add(type, count: count)
-          saveJokers()
-      }
-    
-    // MARK: - Joker Kullanımı
-    func useJoker(_ type: JokerType, targetWord: String, gameModel: GameModel) -> Bool {
-        guard jokers.use(type) else { return false }
-        
-        usedJokersInCurrentGame.insert(type)
-        
-        switch type {
-        case .revealLetter:
-            revealRandomLetter(in: targetWord)
-        case .removeLetter:
-            removeWrongLetters(targetWord: targetWord, gameModel: gameModel)
-        case .extraTime:
-            gameModel.addExtraTime(30) // 30 saniye ekle
-        }
-        
-        saveJokers()
-        return true
-    }
-    
-    private func revealRandomLetter(in word: String) {
-        let availablePositions = (0..<word.count).filter { !revealedLetters.contains($0) }
-        if let randomPosition = availablePositions.randomElement() {
-            revealedLetters.insert(randomPosition)
-        }
-    }
-    
-    private func removeWrongLetters(targetWord: String, gameModel: GameModel) {
-        let alphabet = "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ"
-        let targetLetters = Set(targetWord)
-        
-        for char in alphabet {
-            if !targetLetters.contains(char) {
-                removedLetters.insert(char)
-            }
-        }
-    }
-    
-    // MARK: - Oyun Sıfırlama
-    func resetForNewGame() {
-        usedJokersInCurrentGame.removeAll()
-        revealedLetters.removeAll()
-        removedLetters.removeAll()
-    }
-    
-    // MARK: - Reklam ile Joker Kazanma
-    func earnJokersFromAd() {
-        let randomJoker = JokerType.allCases.randomElement() ?? .revealLetter
-        jokers.add(randomJoker, count: 1)
-        saveJokers()
-    }
-    
-    func earnDailyJokers() {
-        // Günlük joker dağıtımı
-        jokers.add(.revealLetter, count: 1)
-        jokers.add(.removeLetter, count: 1)
-        saveJokers()
     }
 }

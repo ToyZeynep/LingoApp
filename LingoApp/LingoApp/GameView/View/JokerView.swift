@@ -85,11 +85,13 @@ struct JokerCompactView: View {
                 
             case .extraTime:
                 game.addExtraTime(30)
+                
+            case .showHint:
+                game.useHintJoker()
             }
             
             game.jokerManager.usedJokersInCurrentGame.insert(type)
             game.jokerManager.saveJokers()
-            
         }
     }
 }

@@ -21,7 +21,8 @@ class GameModel: ObservableObject {
     @Published var soundEnabled = true
     @Published var isLoadingWord = false
     @Published var revealedPositions: Set<Int> = []
-    
+    @Published var currentWordMeaning: String = ""
+    @Published var showHintText = false
     @Published var totalCorrectGuesses = UserDefaults.standard.integer(forKey: "TotalCorrectGuesses")
     @Published var showJokerRewardAlert = false
     @Published var rewardedJokerType: JokerType? = nil
@@ -68,34 +69,77 @@ class GameModel: ObservableObject {
     
     // MARK: - Oyun Mantığı (Firebase ile)
     func startNewGame() {
-        isLoadingWord = true
-        gameState = .playing
-        currentGuess = ""
-        guesses = []
-        jokerManager.resetForNewGame()
-        revealedPositions.removeAll()
-        timeRemaining = gameDuration
-        
-        playSound(named: "gameStart")
-        
-        wordUploader.fetchRandomWordWithMeaning(length: wordLength) { [weak self] word in
-            DispatchQueue.main.async {
-                guard let self = self else { return }
-                
-                if let word = word {
-                    self.targetWord = word.word.turkishUppercased
-                    print("🎯 Yeni kelime: \(self.targetWord) (\(self.wordLength) harf)")
-                    self.isLoadingWord = false
-                    self.startTimer()
-                } else {
-                    self.targetWord = self.getFallbackWord()
-                    print("⚠️ Fallback kelime kullanıldı: \(self.targetWord)")
-                    self.isLoadingWord = false
-                    self.startTimer()
-                }
-            }
-        }
-    }
+         isLoadingWord = true
+         gameState = .playing
+         currentGuess = ""
+         guesses = []
+         jokerManager.resetForNewGame()
+         revealedPositions.removeAll()
+         timeRemaining = gameDuration
+         
+         // Hint joker için sıfırla
+         showHintText = false
+         currentWordMeaning = ""
+         
+         playSound(named: "gameStart")
+         
+         wordUploader.fetchRandomWordWithMeaning(length: wordLength) { [weak self] wordData in
+             DispatchQueue.main.async {
+                 guard let self = self else { return }
+                 
+                 if let wordData = wordData {
+                     self.targetWord = wordData.word.turkishUppercased
+                     self.currentWordMeaning = wordData.meaning ?? "Anlam bulunamadı"
+                     print("🎯 Yeni kelime: \(self.targetWord) - Anlam: \(self.currentWordMeaning)")
+                     self.isLoadingWord = false
+                     self.startTimer()
+                 } else {
+                     let fallbackData = self.getFallbackWordWithMeaning()
+                     self.targetWord = fallbackData.word
+                     self.currentWordMeaning = fallbackData.meaning
+                     print("⚠️ Fallback kelime kullanıldı: \(self.targetWord)")
+                     self.isLoadingWord = false
+                     self.startTimer()
+                 }
+             }
+         }
+     }
+     
+     // Yeni fallback fonksiyonu (anlam ile birlikte)
+     private func getFallbackWordWithMeaning() -> (word: String, meaning: String) {
+         let fallbackWordsWithMeanings: [Int: [(String, String)]] = [
+             4: [
+                 ("KEDI", "Evde besilen, miyavlayan dört ayaklı hayvan"),
+                 ("MASA", "Üzerine yemek yenilen, çalışılan düz yüzey"),
+                 ("ELMA", "Kırmızı veya yeşil renkli, tatlı meyve"),
+                 ("DAMA", "Tahtada oynanan strateji oyunu"),
+                 ("YAZZ", "Sıcak mevsim, tatil zamanı")
+             ],
+             5: [
+                 ("ELMAS", "Çok değerli, parlak taş"),
+                 ("KÖPEK", "Evde besilen, havlayan dört ayaklı hayvan"),
+                 ("BAHÇE", "Çiçek ve sebze yetiştirilen alan"),
+                 ("ASLAN", "Ormanlarda yaşayan büyük kedi"),
+                 ("DÜNYA", "Üzerinde yaşadığımız gezegen")
+             ],
+             6: [
+                 ("DOKTOR", "Hastaları tedavi eden kişi"),
+                 ("OKULLL", "Eğitim verilen yer"),
+                 ("BILGII", "Öğrenilen, bilinен şeyler"),
+                 ("ARKADŞ", "Sevdiğimiz, güvendiğimiz kişi"),
+                 ("GÜNEŞŞ", "Gündüz ışık veren yıldız")
+             ]
+         ]
+         
+         let wordsForLength = fallbackWordsWithMeanings[wordLength] ?? [("ERROR", "Hata")]
+         let selected = wordsForLength.randomElement() ?? ("ERROR", "Hata")
+         return selected
+     }
+     
+     // Hint joker kullanma fonksiyonu
+     func useHintJoker() {
+         showHintText = true
+     }
     
     private func getFallbackWord() -> String {
         let fallbackWords: [Int: [String]] = [
@@ -280,7 +324,6 @@ class GameModel: ObservableObject {
         return GuessResult(word: guess, letters: letters)
     }
     
-    // MARK: - Joker Ödül Sistemi
     private func checkAndRewardJoker() {
         // Doğru tahmin sayısını artır
         totalCorrectGuesses += 1
@@ -292,18 +335,8 @@ class GameModel: ObservableObject {
             let jokerTypes = JokerType.allCases
             let randomJoker = jokerTypes.randomElement() ?? .revealLetter
             
-            // Jokeri ekle
-            switch randomJoker {
-            case .revealLetter:
-                jokerManager.jokers.revealLetter += 1
-            case .removeLetter:
-                jokerManager.jokers.removeLetter += 1
-            case .extraTime:
-                jokerManager.jokers.extraTime += 1
-            }
-            
-            // Kaydet
-            jokerManager.saveJokers()
+            // Jokeri ekle - YENİ YÖNTEM
+            jokerManager.addJoker(randomJoker, count: 1)
             
             // Alert için state'leri güncelle
             rewardedJokerType = randomJoker
@@ -322,26 +355,23 @@ class GameModel: ObservableObject {
             checkSpecialMilestoneRewards()
         }
     }
-    
+
     private func checkSpecialMilestoneRewards() {
         switch totalCorrectGuesses {
         case 50:
             // 50. tahminde ekstra ödül
-            jokerManager.jokers.revealLetter += 2
-            jokerManager.jokers.removeLetter += 1
-            jokerManager.saveJokers()
+            jokerManager.addJoker(.revealLetter, count: 2)
+            jokerManager.addJoker(.removeLetter, count: 1)
         case 100:
             // 100. tahminde mega ödül
-            jokerManager.jokers.revealLetter += 3
-            jokerManager.jokers.removeLetter += 2
-            jokerManager.jokers.extraTime += 2
-            jokerManager.saveJokers()
+            jokerManager.addJoker(.revealLetter, count: 3)
+            jokerManager.addJoker(.removeLetter, count: 2)
+            jokerManager.addJoker(.extraTime, count: 2)
         case 250:
             // 250. tahminde süper ödül
-            jokerManager.jokers.revealLetter += 5
-            jokerManager.jokers.removeLetter += 5
-            jokerManager.jokers.extraTime += 5
-            jokerManager.saveJokers()
+            JokerType.allCases.forEach { type in
+                jokerManager.addJoker(type, count: 5)
+            }
         default:
             break
         }
