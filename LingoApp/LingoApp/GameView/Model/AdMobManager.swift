@@ -19,7 +19,7 @@ class AdMobManager: NSObject, ObservableObject {
     private var rewardCompletion: ((Bool) -> Void)?
     
     private let rewardedAdUnitID = "ca-app-pub-7359263265391774/4270626269"
-    
+    let testRewardedAdUnitID = "ca-app-pub-3940256099942544/1712485313"
     override init() {
         super.init()
         initializeGoogleMobileAds()
@@ -51,7 +51,7 @@ class AdMobManager: NSObject, ObservableObject {
         let request = Request()
         
         // Yeni API kullanımı
-        RewardedAd.load(with: rewardedAdUnitID, request: request) { [weak self] ad, error in
+        RewardedAd.load(with: testRewardedAdUnitID, request: request) { [weak self] ad, error in
             DispatchQueue.main.async {
                 self?.isLoading = false
                 
