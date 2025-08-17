@@ -124,7 +124,7 @@ struct HomeScreenView: View {
                         .animation(.spring(response: 1.2, dampingFraction: 0.8), value: animateTitle)
                         
                         // App Name
-                        Text("LINGO")
+                        Text("WORD LINGO")
                             .font(.system(size: 42, weight: .bold, design: .rounded))
                             .foregroundStyle(
                                 LinearGradient(
