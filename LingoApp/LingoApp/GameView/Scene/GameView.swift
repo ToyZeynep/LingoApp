@@ -129,6 +129,7 @@ struct GameView: View {
                     },
                     icon: game.gameState == .won ? "trophy.fill" : "gamecontroller.fill",
                     iconColor: game.gameState == .won ? .yellow : .purple,
+                    wordMeaning: game.currentWordMeaning.isEmpty ? "Anlam bulunamadı" : game.currentWordMeaning,  // ✅ Kelimenin anlamı
                     isPresented: $showGameOver
                 )
             }

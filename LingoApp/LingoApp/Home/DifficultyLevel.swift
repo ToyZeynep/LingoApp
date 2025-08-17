@@ -58,7 +58,7 @@ enum DifficultyLevel: String, CaseIterable, Codable {
         switch self {
         case .easy: return 150
         case .medium: return 120
-        case .hard: return 90
+        case .hard: return 120
         }
     }
     
