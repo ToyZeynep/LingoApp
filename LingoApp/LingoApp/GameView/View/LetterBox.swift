@@ -11,7 +11,9 @@ import SwiftUI
 struct LetterBox: View {
     let letter: Character?
     let state: LetterGuessState
-    let boxSize: CGFloat // Yeni parametre
+    let boxSize: CGFloat
+    let isLastRow: Bool  // ✅ YENİ: Son satır mı kontrol et
+    
     @State private var isAnimating = false
     @State private var flipRotation: Double = 0
     
@@ -21,7 +23,7 @@ struct LetterBox: View {
             .frame(width: boxSize, height: boxSize)
             .overlay(
                 Text(letter.map(String.init) ?? "")
-                    .font(.system(size: boxSize * 0.4, weight: .medium)) // Dinamik font boyutu
+                    .font(.system(size: boxSize * 0.4, weight: .medium))
                     .foregroundColor(textColor)
             )
             .overlay(
@@ -53,8 +55,7 @@ struct LetterBox: View {
                 }
             }
             .onChange(of: state) { newState in
-                // Durum değişirken flip animasyonu
-                if newState != .unused {
+                if newState != .unused && isLastRow {
                     withAnimation(.easeInOut(duration: 0.3)) {
                         flipRotation = 90
                     }

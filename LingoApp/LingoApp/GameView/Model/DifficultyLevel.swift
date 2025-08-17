@@ -103,4 +103,12 @@ enum DifficultyLevel: String, CaseIterable, Codable {
               return "UZMAN"
           }
       }
+    
+    var visibleGuesses: Int {
+         switch self {
+         case .easy: return 5
+         case .medium: return 5
+         case .hard: return 5
+         }
+     }
 }
