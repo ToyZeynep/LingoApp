@@ -62,7 +62,7 @@ class AdMobManager: NSObject, ObservableObject {
                     // Network hatası varsa 5 saniye sonra tekrar dene
                     if error.localizedDescription.contains("network") ||
                        error.localizedDescription.contains("connection") {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 15.0) {
                             self?.loadRewardedAd()
                         }
                     }

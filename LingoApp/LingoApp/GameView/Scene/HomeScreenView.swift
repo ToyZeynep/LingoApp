@@ -17,6 +17,18 @@ struct HomeScreenView: View {
     
     let onPlayTapped: () -> Void
     
+    // App version from Bundle
+    private var appVersion: String {
+        if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String,
+           let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String {
+            return "\(version)"
+        } else if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
+            return version
+        } else {
+            return "1.0"
+        }
+    }
+    
     var body: some View {
         ZStack {
             // Animated Background
@@ -104,8 +116,8 @@ struct HomeScreenView: View {
                                 .frame(width: 120, height: 120)
                                 .shadow(color: .cyan.opacity(0.5), radius: 20, x: 0, y: 10)
                             
-                            Text("L")
-                                .font(.system(size: 60, weight: .bold, design: .rounded))
+                            Text("WL")
+                                .font(.system(size: 50, weight: .bold, design: .rounded))
                                 .foregroundColor(.white)
                         }
                         .scaleEffect(animateTitle ? 1.0 : 0.8)
@@ -170,11 +182,11 @@ struct HomeScreenView: View {
                 
                 // Bottom Info
                 VStack(spacing: 5) {
-                    Text("Sürüm 1.0")
+                    Text("Sürüm \(appVersion)")
                         .font(.caption)
                         .foregroundColor(.white.opacity(0.5))
                     
-                    Text("© 2025 Lingo App")
+                    Text("© 2025 Word Lingo")
                         .font(.caption2)
                         .foregroundColor(.white.opacity(0.4))
                 }
