@@ -8,7 +8,6 @@
 
 import SwiftUI
 
-// MARK: - Hint View
 struct HintView: View {
     let meaning: String
     @State private var isVisible = false
@@ -20,7 +19,7 @@ struct HintView: View {
                     .font(.system(size: 16, weight: .bold))
                     .foregroundColor(.yellow)
                 
-                Text("İPUCU")
+                Text("İPUCU".localized)
                     .font(.system(size: 14, weight: .bold))
                     .foregroundColor(.yellow)
                 

@@ -11,7 +11,7 @@ struct TimerProgressView: View {
     @ObservedObject var game: GameModel
     
     var progressValue: Double {
-        min(game.timeRemaining / game.gameDuration, 1.0) // 1.0'ı geçmemesini sağla
+        min(game.timeRemaining / game.gameDuration, 1.0)
     }
     
     var timeColor: Color {
@@ -32,7 +32,6 @@ struct TimerProgressView: View {
     
     var body: some View {
         VStack(spacing: 8) {
-            // Süre metni
             HStack {
                 Image(systemName: "timer")
                     .font(.caption)
@@ -52,10 +51,8 @@ struct TimerProgressView: View {
                 }
             }
             
-            // Progress bar - SABİT GENİŞLİK
             GeometryReader { geometry in
                 ZStack(alignment: .leading) {
-                    // Arkaplan - tam genişlik
                     RoundedRectangle(cornerRadius: 6)
                         .fill(.ultraThinMaterial)
                         .frame(height: 8)
@@ -64,7 +61,6 @@ struct TimerProgressView: View {
                                 .stroke(.white.opacity(0.2), lineWidth: 1)
                         )
                     
-                    // Progress - dinamik genişlik ama sınırlı
                     RoundedRectangle(cornerRadius: 6)
                         .fill(
                             LinearGradient(
@@ -81,7 +77,7 @@ struct TimerProgressView: View {
                         .animation(.linear(duration: 1), value: progressValue)
                 }
             }
-            .frame(height: 8) // Progress bar yüksekliği sabit
+            .frame(height: 8)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 10)

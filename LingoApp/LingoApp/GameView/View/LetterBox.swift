@@ -12,7 +12,7 @@ struct LetterBox: View {
     let letter: Character?
     let state: LetterGuessState
     let boxSize: CGFloat
-    let isLastRow: Bool  // ✅ YENİ: Son satır mı kontrol et
+    let isLastRow: Bool
     
     @State private var isAnimating = false
     @State private var flipRotation: Double = 0
@@ -44,7 +44,6 @@ struct LetterBox: View {
             .animation(.easeInOut(duration: 0.15), value: isAnimating)
             .animation(.easeInOut(duration: 0.6), value: flipRotation)
             .onChange(of: letter) { _ in
-                // Harf yazılırken küçük animasyon
                 withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
                     isAnimating = true
                 }

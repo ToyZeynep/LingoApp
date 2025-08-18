@@ -45,7 +45,7 @@ struct DifficultySelectionView: View {
                             Image(systemName: "chevron.left.circle.fill")
                                 .font(.title2)
                                 .symbolRenderingMode(.hierarchical)
-                            Text("Geri")
+                            Text("Geri".localized)
                                 .font(.system(size: 16, weight: .medium))
                         }
                         .foregroundStyle(.white)
@@ -76,7 +76,7 @@ struct DifficultySelectionView: View {
                         .scaleEffect(animateCards ? 1.1 : 1.0)
                         .animation(.easeInOut(duration: 2).repeatForever(autoreverses: true), value: animateCards)
                     
-                    Text("ZORLUK SEVİYESİ")
+                    Text("ZORLUK SEVİYESİ".localized)
                         .font(.system(size: 28, weight: .black))
                         .foregroundStyle(
                             LinearGradient(
@@ -86,7 +86,7 @@ struct DifficultySelectionView: View {
                             )
                         )
                     
-                    Text("Seviyeni seç ve meydan okumanı başlat!")
+                    Text("Seviyeni seç ve meydan okumanı başlat!".localized)
                         .font(.subheadline)
                         .foregroundColor(.white.opacity(0.8))
                         .multilineTextAlignment(.center)

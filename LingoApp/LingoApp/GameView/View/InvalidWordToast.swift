@@ -18,7 +18,7 @@ struct InvalidWordToast: View {
                 .font(.system(size: 16))
                 .foregroundColor(.orange)
             
-            Text("Lütfen geçerli Türkçe bir kelime girin")
+            Text("Lütfen geçerli Türkçe bir kelime girin".localized)
                 .font(.system(size: 14, weight: .medium))
                 .foregroundColor(.white)
             
@@ -38,7 +38,7 @@ struct InvalidWordToast: View {
         .scaleEffect(isVisible ? 1.0 : 0.9)
         .opacity(isVisible ? 1.0 : 0.0)
         .onAppear {
-         
+            
             UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
             
             withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {

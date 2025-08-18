@@ -27,8 +27,8 @@ class GameModel: ObservableObject {
     @Published var showJokerRewardAlert = false
     @Published var rewardedJokerType: JokerType? = nil
     
-    var maxGuesses = Int.max        // ✅ Sonsuz tahmin
-    var visibleGuesses = 5          // ✅ Görünür satır sayısı sabit
+    var maxGuesses = Int.max
+    var visibleGuesses = 5
     var wordLength = 5
     var gameDuration: TimeInterval = 120
     
@@ -41,7 +41,7 @@ class GameModel: ObservableObject {
     
     init(difficulty: DifficultyLevel = .medium) {
         self.difficulty = difficulty
-        self.visibleGuesses = 5  // ✅ Hep 5 satır görünür (tüm zorluk seviyeleri için)
+        self.visibleGuesses = 5
         self.wordLength = difficulty.wordLength
         self.gameDuration = TimeInterval(difficulty.time)
         self.timeRemaining = gameDuration
@@ -50,12 +50,10 @@ class GameModel: ObservableObject {
         startNewGame()
     }
     
-    // ✅ YENİ: Görünen satır sayısını hesapla
     var displayedGuessCount: Int {
         return visibleGuesses
     }
     
-    // ✅ YENİ: Scroll offset hesapla
     var scrollOffset: Int {
         return max(0, guesses.count - visibleGuesses + 1)
     }
@@ -78,7 +76,6 @@ class GameModel: ObservableObject {
         saveSoundSettings()
     }
     
-    // MARK: - Oyun Mantığı (Firebase ile)
     func startNewGame() {
         isLoadingWord = true
         gameState = .playing
@@ -87,8 +84,6 @@ class GameModel: ObservableObject {
         jokerManager.resetForNewGame()
         revealedPositions.removeAll()
         timeRemaining = gameDuration
-        
-        // Hint joker için sıfırla
         showHintText = false
         currentWordMeaning = ""
         
@@ -100,7 +95,7 @@ class GameModel: ObservableObject {
                 
                 if let wordData = wordData {
                     self.targetWord = wordData.word.turkishUppercased
-                    self.currentWordMeaning = wordData.meaning ?? "Anlam bulunamadı"
+                    self.currentWordMeaning = wordData.meaning
                     print("🎯 Yeni kelime: \(self.targetWord) - Anlam: \(self.currentWordMeaning)")
                     self.isLoadingWord = false
                     self.startTimer()
@@ -116,7 +111,6 @@ class GameModel: ObservableObject {
         }
     }
     
-    // Yeni fallback fonksiyonu (anlam ile birlikte)
     private func getFallbackWordWithMeaning() -> (word: String, meaning: String) {
         let fallbackWordsWithMeanings: [Int: [(String, String)]] = [
             4: [
@@ -147,7 +141,6 @@ class GameModel: ObservableObject {
         return selected
     }
     
-    // Hint joker kullanma fonksiyonu
     func useHintJoker() {
         showHintText = true
     }
@@ -206,7 +199,6 @@ class GameModel: ObservableObject {
                 if isValid {
                     self.processNormalGuess(guess)
                 } else {
-                    // Geçersiz kelime - tahtayı temizle
                     self.currentGuess = ""
                     self.showInvalidWordAlert = true
                     self.playSound(named: "invalid")
@@ -219,9 +211,6 @@ class GameModel: ObservableObject {
         let result = checkGuess(guess)
         guesses.append(result)
         updateRevealedPositionsFromGuess(guess)
-        
-        // ✅ Sonsuz tahmin için maxGuesses kontrolü kaldırıldı
-        // Sadece süre kontrolü ve kazanma kontrolü var
         playSound(named: "tap")
         currentGuess = ""
     }
@@ -293,28 +282,21 @@ class GameModel: ObservableObject {
     }
     
     private func checkAndRewardJoker() {
-        // Doğru tahmin sayısını artır
         totalCorrectGuesses += 1
         UserDefaults.standard.set(totalCorrectGuesses, forKey: "TotalCorrectGuesses")
         
-        // Her 10 doğru tahminde ödül ver
         if totalCorrectGuesses % 10 == 0 && totalCorrectGuesses > 0 {
-            // Rastgele bir joker türü seç
             let jokerTypes = JokerType.allCases
             let randomJoker = jokerTypes.randomElement() ?? .revealLetter
             
-            // Jokeri ekle
             jokerManager.addJoker(randomJoker, count: 1)
             
-            // Alert için state'leri güncelle
             rewardedJokerType = randomJoker
             
-            // Ödül sesi çal
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
                 self.playSound(named: "reward")
             }
             
-            // Biraz gecikmeyle alert göster
             DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                 self.showJokerRewardAlert = true
             }
@@ -341,14 +323,12 @@ class GameModel: ObservableObject {
         }
     }
     
-    // İlerleme bilgisi için yardımcı fonksiyon
     func getProgressToNextReward() -> (current: Int, needed: Int) {
         let current = totalCorrectGuesses % 10
         let needed = 10 - current
         return (current, needed)
     }
-    
-    // MARK: - İstatistik Yönetimi
+
     private func updateStatisticsForWin() {
         statisticsManager.updateForWin(guessCount: guesses.count)
     }
@@ -414,7 +394,6 @@ class GameModel: ObservableObject {
         }
     }
     
-    // MARK: - Timer Yönetimi
     private func startTimer() {
         stopTimer()
         isTimerActive = true
@@ -457,9 +436,12 @@ class GameModel: ObservableObject {
         guard SoundEngine.shared.enabled else { return }
 
         switch soundName {
-        case "click":   SoundEngine.shared.play(.click)
-        case "delete":  SoundEngine.shared.play(.delete)
-        case "tap":     SoundEngine.shared.play(.tap)
+        case "click":
+            SoundEngine.shared.play(.click)
+        case "delete":
+            SoundEngine.shared.play(.delete)
+        case "tap":
+            SoundEngine.shared.play(.tap)
         case "success":
             SoundEngine.shared.play(.success) {
                 UIImpactFeedbackGenerator(style: .heavy).impactOccurred()

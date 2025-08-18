@@ -8,7 +8,6 @@
 
 import Foundation
 
-// MARK: - Oyun Durumları
 enum GameState {
     case playing
     case won
@@ -16,14 +15,13 @@ enum GameState {
 }
 
 enum LetterGuessState {
-    case correct      // Doğru harf, doğru konum (yeşil)
-    case wrongPosition // Doğru harf, yanlış konum (sarı)
-    case wrong        // Yanlış harf (gri)
-    case unused       // Henüz kullanılmamış
+    case correct
+    case wrongPosition
+    case wrong
+    case unused
     case revealed
 }
 
-// MARK: - Veri Modelleri
 struct GuessResult {
     let word: String
     let letters: [LetterState]
@@ -34,7 +32,6 @@ struct LetterState {
     let state: LetterGuessState
 }
 
-// MARK: - Oyun İstatistikleri
 struct GameStatistics: Codable {
     var gamesPlayed: Int = 0
     var gamesWon: Int = 0

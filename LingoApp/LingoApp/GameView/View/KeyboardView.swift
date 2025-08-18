@@ -25,7 +25,7 @@ struct KeyboardView: View {
             ForEach(0..<3, id: \.self) { rowIndex in
                 HStack(spacing: 3) {
                     ForEach(keyboardRows[rowIndex], id: \.self) { key in
-                        if key == "SİL" {
+                        if key == "SİL".localized {
                             Button(action: {
                                 game.deleteLetter()
                             }) {
@@ -56,7 +56,6 @@ struct KeyboardView: View {
                             )
                             .disabled(game.currentGuess.count != remainingLettersNeeded || game.gameState != .playing)
                         } else {
-                            // Normal harf tuşları - silinen harfler gri gösterilecek
                             let isRemoved = game.jokerManager.removedLetters.contains(Character(key))
                             
                             Button(action: {
@@ -75,15 +74,14 @@ struct KeyboardView: View {
                                 height: 50,
                                 fontSize: 18,
                                 backgroundColor: isRemoved ?
-                                    .gray.opacity(0.3) :  // Silinen harfler soluk gri
+                                    .gray.opacity(0.3) :
                                     getKeyColor(for: key),
                                 textColor: isRemoved ?
-                                    .gray.opacity(0.5) :  // Silinen harf metni de soluk
+                                    .gray.opacity(0.5) :
                                     getKeyTextColor(for: key)
                             )
                             .disabled(game.gameState != .playing || isRemoved)
                             .overlay(
-                                // Silinen harfler için çarpı işareti (opsiyonel)
                                 isRemoved ?
                                 Image(systemName: "xmark")
                                     .font(.system(size: 10, weight: .bold))

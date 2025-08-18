@@ -25,22 +25,19 @@ struct SettingsView: View {
                 .ignoresSafeArea()
                 
                 VStack(spacing: 30) {
-                    // Settings Title
-                    Text("Ayarlar")
+                    Text("Ayarlar".localized)
                         .font(.system(size: 32, weight: .bold, design: .rounded))
                         .foregroundColor(.white)
                         .padding(.top, 20)
                     
-                    // Settings Options
                     VStack(spacing: 20) {
-                        // Sound Toggle
                         HStack {
                             Image(systemName: soundEnabled ? "speaker.wave.2.fill" : "speaker.slash.fill")
                                 .font(.title2)
                                 .foregroundColor(.cyan)
                                 .frame(width: 30)
                             
-                            Text("Ses Efektleri")
+                            Text("Ses Efektleri".localized)
                                 .font(.system(size: 18, weight: .medium))
                                 .foregroundColor(.white)
                             
@@ -68,7 +65,7 @@ struct SettingsView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Tamam") {
+                    Button("Tamam".localized) {
                         dismiss()
                     }
                     .foregroundColor(.cyan)

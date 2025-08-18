@@ -27,41 +27,39 @@ struct StatisticsView: View {
                 .ignoresSafeArea()
                 
                 VStack(spacing: 30) {
-                    // İstatistik Kartları
                     HStack(spacing: 15) {
                         StatCard(
-                            title: "Oyun",
+                            title: "Oyun".localized,
                             value: "\(statisticsManager.statistics.gamesPlayed)",
-                            subtitle: "Toplam",
+                            subtitle: "Toplam".localized,
                             color: .blue
                         )
                         
                         StatCard(
-                            title: "Kazanma",
+                            title: "Kazanma".localized,
                             value: "\(Int(statisticsManager.statistics.winPercentage))%",
-                            subtitle: "Oranı",
+                            subtitle: "Oranı".localized,
                             color: .green
                         )
                         
                         StatCard(
-                            title: "Şu Anki",
+                            title: "Şu Anki".localized,
                             value: "\(statisticsManager.statistics.currentStreak)",
-                            subtitle: "Seri",
+                            subtitle: "Seri".localized,
                             color: .orange
                         )
                         
                         StatCard(
-                            title: "En İyi",
+                            title: "En İyi".localized,
                             value: "\(statisticsManager.statistics.maxStreak)",
-                            subtitle: "Seri",
+                            subtitle: "Seri".localized,
                             color: .purple
                         )
                     }
                     .padding(.horizontal)
-                    
-                    // Tahmin Dağılımı
+   
                     VStack(alignment: .leading, spacing: 15) {
-                        Text("TAHMİN DAĞILIMI")
+                        Text("TAHMİN DAĞILIMI".localized)
                             .font(.headline)
                             .fontWeight(.bold)
                             .foregroundColor(.white)
@@ -75,7 +73,7 @@ struct StatisticsView: View {
                                 )
                             }
                         } else {
-                            Text("Henüz oyun oynamadınız")
+                            Text("Henüz oyun oynamadınız".localized)
                                 .foregroundColor(.white.opacity(0.7))
                                 .italic()
                                 .padding()
@@ -96,11 +94,11 @@ struct StatisticsView: View {
                 }
                 .padding(.vertical)
             }
-            .navigationTitle("İstatistikler")
+            .navigationTitle("İstatistikler".localized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Kapat") {
+                    Button("Kapat".localized) {
                         isPresented = false
                     }
                     .foregroundColor(.cyan)
@@ -120,91 +118,6 @@ struct StatisticsView: View {
            let window = windowScene.windows.first {
             window.rootViewController?.present(av, animated: true)
         }
-    }
-}
-
-// MARK: - İstatistik Kartı
-struct StatCard: View {
-    let title: String
-    let value: String
-    let subtitle: String
-    let color: Color
-    
-    var body: some View {
-        VStack(spacing: 8) {
-            Text(value)
-                .font(.title2)
-                .fontWeight(.bold)
-                .foregroundColor(.white)
-            
-            Text(title)
-                .font(.caption)
-                .foregroundColor(.white.opacity(0.8))
-            
-            Text(subtitle)
-                .font(.caption2)
-                .foregroundColor(.white.opacity(0.6))
-        }
-        .frame(maxWidth: .infinity, minHeight: 80)
-        .padding()
-        .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(color.opacity(0.3))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(color.opacity(0.5), lineWidth: 1)
-                )
-                .shadow(color: color.opacity(0.3), radius: 8, x: 0, y: 4)
-        )
-    }
-}
-
-// MARK: - Tahmin Dağılım Satırı
-struct GuessDistributionRow: View {
-    let guessNumber: Int
-    let count: Int
-    let maxCount: Int
-    
-    var body: some View {
-        HStack(spacing: 12) {
-            Text("\(guessNumber)")
-                .font(.system(size: 16, weight: .semibold))
-                .foregroundColor(.white)
-                .frame(width: 25)
-            
-            ZStack(alignment: .leading) {
-                Rectangle()
-                    .fill(.white.opacity(0.2))
-                    .frame(height: 30)
-                
-                Rectangle()
-                    .fill(
-                        LinearGradient(
-                            colors: [.green, .green.opacity(0.8)],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                    )
-                    .frame(width: barWidth, height: 30)
-                
-                HStack {
-                    Spacer()
-                    Text("\(count)")
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundColor(count > 0 ? .white : .white.opacity(0.7))
-                        .padding(.trailing, 8)
-                }
-                .frame(height: 30)
-            }
-            .cornerRadius(6)
-        }
-    }
-    
-    private var barWidth: CGFloat {
-        guard maxCount > 0 else { return 0 }
-        let maxWidth: CGFloat = 200 // Max bar genişliği
-        let percentage = Double(count) / Double(maxCount)
-        return max(CGFloat(percentage) * maxWidth, count > 0 ? 40 : 0)
     }
 }
 

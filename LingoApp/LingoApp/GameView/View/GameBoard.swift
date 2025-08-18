@@ -7,17 +7,13 @@
 
 import SwiftUI
 
-
-// GameView.swift - GameBoard struct'ını şöyle güncelleyin:
-
 struct GameBoard: View {
     @ObservedObject var game: GameModel
-    
-    // Dinamik kutu boyutu hesapla
+
     private var boxSize: CGFloat {
         let screenWidth = UIScreen.main.bounds.width
-        let availableWidth = screenWidth - 80 // Padding için
-        let spacing = CGFloat(game.wordLength - 1) * 8 // Kutular arası boşluk
+        let availableWidth = screenWidth - 80
+        let spacing = CGFloat(game.wordLength - 1) * 8
         return min((availableWidth - spacing) / CGFloat(game.wordLength), 55)
     }
     
@@ -27,7 +23,6 @@ struct GameBoard: View {
     
     var body: some View {
         VStack(spacing: 20) {
-            // ✅ Basit ScrollView - Orijinal mantıkla
             ScrollViewReader { proxy in
                 ScrollView(.vertical, showsIndicators: false) {
                     LazyVStack(spacing: 12) {
@@ -56,14 +51,13 @@ struct GameBoard: View {
                 }
             }
             
-            // Tahmin sayacı
             if game.guesses.count > 0 {
                 HStack {
                     Image(systemName: "number.circle.fill")
                         .font(.system(size: 14))
                         .foregroundColor(.cyan)
                     
-                    Text("Tahmin: \(game.guesses.count)")
+                    Text("Tahmin: \(game.guesses.count)".localized)
                         .font(.system(size: 12, weight: .medium))
                         .foregroundColor(.white.opacity(0.7))
                     

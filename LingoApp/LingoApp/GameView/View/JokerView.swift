@@ -59,11 +59,9 @@ struct JokerCompactView: View {
                 game.useJoker()
                 
             case .removeLetter:
-                // Alfabedeki tüm harfler
                 let alphabet = "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ"
                 let targetLetters = Set(game.targetWord)
                 
-                // Kelimede olmayan ve henüz silinmemiş harfleri bul
                 var availableLetters: [Character] = []
                 for char in alphabet {
                     if !targetLetters.contains(char) && !game.jokerManager.removedLetters.contains(char) {
@@ -71,17 +69,15 @@ struct JokerCompactView: View {
                     }
                 }
                 
-                // Rastgele 3-5 harf sil
                 let numberToRemove = Int.random(in: 3...5)
                 let actualNumberToRemove = min(numberToRemove, availableLetters.count)
                 
-                // Rastgele seç ve sil
                 let shuffledLetters = availableLetters.shuffled()
                 for i in 0..<actualNumberToRemove {
                     game.jokerManager.removedLetters.insert(shuffledLetters[i])
                 }
                 
-                print("🗑️ \(actualNumberToRemove) harf silindi")
+                print("🗑️ \(actualNumberToRemove) harf silindi".localized)
                 
             case .extraTime:
                 game.addExtraTime(30)

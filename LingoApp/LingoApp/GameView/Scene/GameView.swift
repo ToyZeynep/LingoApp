@@ -68,7 +68,7 @@ struct GameView: View {
                                         HStack(spacing: 6) {
                                             Image(systemName: "chevron.left.circle.fill")
                                                 .font(.system(size: 16))
-                                            Text("Geri")
+                                            Text("Geri".localized)
                                                 .font(.system(size: 14, weight: .medium))
                                         }
                                         .foregroundColor(.cyan.opacity(0.9))
@@ -115,36 +115,38 @@ struct GameView: View {
             
             if showGameOver {
                 CustomAlertView(
-                    title: game.gameState == .won ? "Tebrikler! 🎉" : "Oyun Bitti 😔",
+                    title: game.gameState == .won ? "Tebrikler! 🎉".localized : "Oyun Bitti 😔".localized,
+                    // FIX
                     message: game.gameState == .won ?
                         "Kelimeyi \(game.guesses.count + 1) tahminde buldun!\n\nDoğru kelime: \(game.targetWord)" :
                         "Doğru kelime: \(game.targetWord)",
-                    primaryButtonTitle: "Yeni Oyun",
+                    primaryButtonTitle: "Yeni Oyun".localized,
                     primaryAction: {
                         game.startNewGame()
                     },
-                    secondaryButtonTitle: "Ana Menü",
+                    secondaryButtonTitle: "Ana Menü".localized,
                     secondaryAction: {
                         onBackToMenu()
                     },
                     icon: game.gameState == .won ? "trophy.fill" : "gamecontroller.fill",
                     iconColor: game.gameState == .won ? .yellow : .purple,
-                    wordMeaning: game.currentWordMeaning.isEmpty ? "Anlam bulunamadı" : game.currentWordMeaning,  // ✅ Kelimenin anlamı
+                    wordMeaning: game.currentWordMeaning.isEmpty ? "Anlam bulunamadı".localized : game.currentWordMeaning,
                     isPresented: $showGameOver
                 )
             }
             
             if showJokerReward {
+                //FIX
                 if let jokerType = game.rewardedJokerType {
                     CustomAlertView(
-                        title: "Joker Kazandın! 🎁",
+                        title: "Joker Kazandın! 🎁".localized,
                         message: """
                         \(game.totalCorrectGuesses). doğru tahminin için
                         \(jokerType.title) jokeri kazandın!
                         
                         Sonraki ödül için \(game.getProgressToNextReward().needed) tahmin daha!
                         """,
-                        primaryButtonTitle: "Harika!",
+                        primaryButtonTitle: "Harika!".localized,
                         primaryAction: {},
                         icon: "gift.fill",
                         iconColor: jokerType.brightColor,

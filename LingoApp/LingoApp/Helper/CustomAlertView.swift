@@ -8,7 +8,6 @@
 
 import SwiftUI
 
-// MARK: - Custom Alert View
 struct CustomAlertView: View {
     let title: String
     let message: String
@@ -18,7 +17,7 @@ struct CustomAlertView: View {
     var secondaryAction: (() -> Void)? = nil
     var icon: String? = nil
     var iconColor: Color = .cyan
-    var wordMeaning: String? = nil  // ✅ YENİ: Kelimenin anlamı
+    var wordMeaning: String? = nil
     
     @Binding var isPresented: Bool
     @State private var appear = false
@@ -77,9 +76,7 @@ struct CustomAlertView: View {
                     .padding(.bottom, 20)
                 }
                 
-                // Butonlar
                 VStack(spacing: 12) {
-                    // Primary buton
                     Button(action: {
                         primaryAction()
                         dismissAlert()
@@ -100,7 +97,6 @@ struct CustomAlertView: View {
                             .shadow(color: .cyan.opacity(0.3), radius: 8, x: 0, y: 4)
                     }
                     
-                    // Secondary buton (opsiyonel)
                     if let secondaryTitle = secondaryButtonTitle {
                         Button(action: {
                             secondaryAction?()
@@ -125,7 +121,7 @@ struct CustomAlertView: View {
                 .padding(.horizontal, 20)
                 .padding(.bottom, 25)
             }
-            .frame(maxWidth: 340)  // ✅ Biraz genişlettik anlam için
+            .frame(maxWidth: 340)
             .background(
                 RoundedRectangle(cornerRadius: 25)
                     .fill(

@@ -9,7 +9,10 @@ import Foundation
 
 extension String {
     
-    /// Türkçe karakterleri doğru şekilde büyük harfe çevirir
+    var localized: String {
+        return NSLocalizedString(self, comment: "")
+    }
+    
     var turkishUppercased: String {
         return self
             .replacingOccurrences(of: "ı", with: "I")
@@ -22,7 +25,6 @@ extension String {
             .uppercased()
     }
     
-    /// Türkçe karakterleri doğru şekilde küçük harfe çevirir
     var turkishLowercased: String {
         return self
             .replacingOccurrences(of: "I", with: "ı")
@@ -35,31 +37,12 @@ extension String {
             .lowercased()
     }
     
-    /// Türkçe locale ile büyük harf (alternatif yöntem)
     var turkishUppercasedLocale: String {
         return self.uppercased(with: Locale(identifier: "tr_TR"))
     }
     
-    /// Türkçe locale ile küçük harf (alternatif yöntem)
     var turkishLowercasedLocale: String {
         return self.lowercased(with: Locale(identifier: "tr_TR"))
     }
 }
 
-// MARK: - Test Fonksiyonu
-extension String {
-    static func testTurkishConversion() {
-        let testWords = ["istanbul", "İzmir", "şehir", "ğüzel", "çiçek", "ırmak"]
-        
-        print("🧪 Türkçe Karakter Test:")
-        print("========================")
-        
-        for word in testWords {
-            print("Original: \(word)")
-            print("Standard uppercased(): \(word.uppercased())")
-            print("Turkish uppercased: \(word.turkishUppercased)")
-            print("Turkish locale: \(word.turkishUppercasedLocale)")
-            print("---")
-        }
-    }
-}

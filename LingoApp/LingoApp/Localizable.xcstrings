@@ -1,0 +1,118 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "" : {
+
+    },
+    "%lld" : {
+
+    },
+    "%lld:%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld:%2$@"
+          }
+        }
+      }
+    },
+    "© 2025 Word Lingo" : {
+
+    },
+    "⚠️" : {
+
+    },
+    "🃏 JOKER MAĞAZASI" : {
+
+    },
+    "🎯" : {
+
+    },
+    "Atla" : {
+
+    },
+    "Ayarlar" : {
+
+    },
+    "Başla!" : {
+
+    },
+    "Geri" : {
+
+    },
+    "Henüz oyun oynamadınız" : {
+
+    },
+    "İleri" : {
+
+    },
+    "İPUCU" : {
+
+    },
+    "İstatistikler" : {
+
+    },
+    "Kapat" : {
+
+    },
+    "Kelime Tahmin Oyunu" : {
+
+    },
+    "Kelimenin Anlamı:" : {
+
+    },
+    "Lütfen geçerli Türkçe bir kelime girin" : {
+
+    },
+    "Mevcut Jokerleriniz" : {
+
+    },
+    "Nasıl Oynanır" : {
+
+    },
+    "Örnek:" : {
+
+    },
+    "OYNA" : {
+
+    },
+    "Reklam izleyerek ücretsiz joker kazanabilirsin! (Her reklam +3 joker)" : {
+
+    },
+    "Ses Efektleri" : {
+
+    },
+    "Seviyeni seç ve meydan okumanı başlat!" : {
+
+    },
+    "Sürüm %@" : {
+
+    },
+    "TAHMİN DAĞILIMI" : {
+
+    },
+    "Tahmin: %lld" : {
+
+    },
+    "Tamam" : {
+
+    },
+    "Tekrar Dene" : {
+
+    },
+    "Ücretsiz Joker Kazan" : {
+
+    },
+    "WL" : {
+
+    },
+    "WORD LINGO" : {
+
+    },
+    "ZORLUK SEVİYESİ" : {
+
+    }
+  },
+  "version" : "1.0"
+}

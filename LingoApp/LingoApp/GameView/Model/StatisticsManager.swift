@@ -17,8 +17,7 @@ class StatisticsManager: ObservableObject {
     private init() {
         loadStatistics()
     }
-    
-    // MARK: - İstatistik Güncellemeleri
+
     func updateForWin(guessCount: Int) {
         statistics.gamesPlayed += 1
         statistics.gamesWon += 1
@@ -34,7 +33,6 @@ class StatisticsManager: ObservableObject {
         saveStatistics()
     }
     
-    // MARK: - Kaydetme/Yükleme
     private func saveStatistics() {
         if let encoded = try? JSONEncoder().encode(statistics) {
             UserDefaults.standard.set(encoded, forKey: "GlobalGameStatistics")
@@ -48,7 +46,6 @@ class StatisticsManager: ObservableObject {
         }
     }
     
-    // MARK: - Yardımcı Fonksiyonlar
     func resetStatistics() {
         statistics = GameStatistics()
         saveStatistics()

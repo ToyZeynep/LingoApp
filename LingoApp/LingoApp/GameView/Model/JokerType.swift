@@ -18,13 +18,13 @@ enum JokerType: String, CaseIterable, Codable {
     var title: String {
         switch self {
         case .revealLetter:
-            return "Harf Göster"
+            return "Harf Göster".localized
         case .removeLetter:
-            return "Harf Sil"
+            return "Harf Sil".localized
         case .extraTime:
-            return "Ekstra Süre"
+            return "Ekstra Süre".localized
         case .showHint:
-            return "İpucu Göster"
+            return "İpucu Göster".localized
         }
     }
     
@@ -70,23 +70,21 @@ enum JokerType: String, CaseIterable, Codable {
     var description: String {
         switch self {
         case .revealLetter:
-            return "Doğru bir harfi gösterir"
+            return "Doğru bir harfi gösterir".localized
         case .removeLetter:
-            return "Yanlış harfleri klavyeden kaldırır"
+            return "Yanlış harfleri klavyeden kaldırır".localized
         case .extraTime:
-            return "30 saniye ekstra süre verir"
+            return "30 saniye ekstra süre verir".localized
         case .showHint:
-            return "Kelimenin anlamını gösterir"
+            return "Kelimenin anlamını gösterir".localized
         }
     }
 }
 
-// MARK: - Joker Stok Yönetimi
 struct JokerStock: Codable {
     private var jokers: [JokerType: Int] = [:]
     
     init() {
-        // Başlangıç jokerleri
         jokers[.revealLetter] = 2
         jokers[.removeLetter] = 2
         jokers[.extraTime] = 2
@@ -110,7 +108,6 @@ struct JokerStock: Codable {
     }
 }
 
-// MARK: - Joker Manager
 class JokerManager: ObservableObject {
     @Published var jokers = JokerStock()
     @Published var revealedLetters: Set<Int> = []
@@ -121,25 +118,21 @@ class JokerManager: ObservableObject {
         loadJokers()
     }
     
-    // Joker ekleme (reklam izleme sonrası)
     func addJoker(_ type: JokerType, count: Int = 1) {
         jokers.add(type, count: count)
         saveJokers()
     }
     
-    // Joker kullanımı kontrol
     func canUseJoker(_ type: JokerType) -> Bool {
         return jokers.count(for: type) > 0
     }
     
-    // Yeni oyun başlarken temizlik
     func resetForNewGame() {
         revealedLetters.removeAll()
         removedLetters.removeAll()
         usedJokersInCurrentGame.removeAll()
     }
     
-    // MARK: - Persistence
      func saveJokers() {
         if let encoded = try? JSONEncoder().encode(jokers) {
             UserDefaults.standard.set(encoded, forKey: "joker_stock")

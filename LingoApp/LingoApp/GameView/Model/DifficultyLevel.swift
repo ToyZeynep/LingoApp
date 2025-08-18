@@ -8,10 +8,10 @@
 
 import SwiftUI
 
-// MARK: - Zorluk Seviyeleri
 enum DifficultyLevel: String, CaseIterable, Codable {
+    
     case easy = "4_letter"
-    case medium = "5_letter" 
+    case medium = "5_letter"
     case hard = "6_letter"
     
     var wordLength: Int {
@@ -24,9 +24,9 @@ enum DifficultyLevel: String, CaseIterable, Codable {
     
     var title: String {
         switch self {
-        case .easy: return "ACEMİ"
-        case .medium: return "ORTA"
-        case .hard: return "UZMAN"
+        case .easy: return "ACEMİ".localized
+        case .medium: return "ORTA".localized
+        case .hard: return "UZMAN".localized
         }
     }
     
@@ -72,43 +72,32 @@ enum DifficultyLevel: String, CaseIterable, Codable {
     }
     
     var emoji: String {
-          switch self {
-          case .easy:
-              return "🌱"
-          case .medium:
-              return "🔥"
-          case .hard:
-              return "⚡"
-          }
-      }
-      
-      var color: Color {
-          switch self {
-          case .easy:
-              return .mint
-          case .medium:
-              return .orange
-          case .hard:
-              return .purple
-          }
-      }
-      
-      var displayName: String {
-          switch self {
-          case .easy:
-              return "ACEMİ"
-          case .medium:
-              return "ORTA"
-          case .hard:
-              return "UZMAN"
-          }
-      }
+        switch self {
+        case .easy:
+            return "🌱"
+        case .medium:
+            return "🔥"
+        case .hard:
+            return "⚡"
+        }
+    }
+    
+    var color: Color {
+        switch self {
+        case .easy:
+            return .mint
+        case .medium:
+            return .orange
+        case .hard:
+            return .purple
+        }
+    }
     
     var visibleGuesses: Int {
-         switch self {
-         case .easy: return 5
-         case .medium: return 5
-         case .hard: return 5
-         }
-     }
+        switch self {
+        case .easy: return 5
+        case .medium: return 5
+        case .hard: return 5
+        }
+    }
 }
