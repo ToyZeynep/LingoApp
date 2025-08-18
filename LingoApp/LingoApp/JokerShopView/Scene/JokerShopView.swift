@@ -112,7 +112,7 @@ struct JokerShopView: View {
                   AdStatusBanner(
                       icon: "exclamationmark.triangle.fill",
                       title: "Reklam Mevcut Değil".localized,
-                      message: "Şu anda gösterilecek reklam bulunmuyor. İnternet bağlantınızı kontrol edin veya daha sonra tekrar deneyin.".localized,
+                      message: "Şu anda gösterilecek reklam bulunmuyor.Daha sonra tekrar deneyin.".localized,
                       color: .red,
                       showSpinner: false
                   ) {

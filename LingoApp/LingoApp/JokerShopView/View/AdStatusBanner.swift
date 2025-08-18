@@ -45,7 +45,7 @@ struct AdStatusBanner: View {
                     Text(message)
                         .font(.system(size: 12))
                         .foregroundColor(.white.opacity(0.7))
-                        .lineLimit(2)
+                        .lineLimit(3)
                 }
             }
             
