@@ -120,32 +120,32 @@ struct HowToPlayView: View {
 
 private let tutorialPages = [
     TutorialPage(
-        title: "Lingo'ya Hoş Geldin!",
-        description: "Gizli kelimeyi tahmin etmeye hazır mısın? Temel kuralları öğrenelim.",
+        title: "Lingo'ya Hoş Geldin!".localized,
+        description: "Gizli kelimeyi tahmin etmeye hazır mısın? Temel kuralları öğrenelim.".localized,
         icon: "gamecontroller.fill",
         content: .basicRules
     ),
     TutorialPage(
-        title: "Renk Kodları",
-        description: "Her harf rengi sana ipucu verir. Renkleri doğru yorumla!",
+        title: "Renk Kodları".localized,
+        description: "Her harf rengi sana ipucu verir. Renkleri doğru yorumla!".localized,
         icon: "paintpalette.fill",
         content: .letterColors
     ),
     TutorialPage(
-        title: "Jokerler",
-        description: "Zorlandığında jokerler sana yardım edecek. Akıllıca kullan!",
+        title: "Jokerler".localized,
+        description: "Zorlandığında jokerler sana yardım edecek. Akıllıca kullan!".localized,
         icon: "star.fill",
         content: .jokers
     ),
     TutorialPage(
-        title: "Zorluk Seviyeleri",
-        description: "Kendi seviyene uygun zorluğu seç ve meydan okumaya başla!",
+        title: "Zorluk Seviyeleri".localized,
+        description: "Kendi seviyene uygun zorluğu seç ve meydan okumaya başla!".localized,
         icon: "target",
         content: .difficultyLevels
     ),
     TutorialPage(
-        title: "İpuçları",
-        description: "Bu taktiklerle daha başarılı olabilirsin!",
+        title: "İpuçları".localized,
+        description: "Bu taktiklerle daha başarılı olabilirsin!".localized,
         icon: "lightbulb.fill",
         content: .tips
     )

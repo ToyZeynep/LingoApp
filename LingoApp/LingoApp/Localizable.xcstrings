@@ -1,5 +1,5 @@
 {
-  "sourceLanguage" : "en",
+  "sourceLanguage" : "tr",
   "strings" : {
     "" : {
 
@@ -9,7 +9,7 @@
     },
     "%lld:%@" : {
       "localizations" : {
-        "en" : {
+        "tr" : {
           "stringUnit" : {
             "state" : "new",
             "value" : "%1$lld:%2$@"
@@ -23,95 +23,1060 @@
     "⚠️" : {
 
     },
-    "🃏 JOKER MAĞAZASI" : {
-
-    },
     "🎯" : {
 
     },
-    "Atla" : {
-
+    "4 harf • 6 tahmin • 2.5 dakika" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "4 letters • 6 guesses • 2.5 minutes"
+          }
+        }
+      }
+    },
+    "4 harfli kelimeler\nAcemiler için" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "4-letter words\nFor beginners"
+          }
+        }
+      }
+    },
+    "5 harf • 6 tahmin • 2 dakika" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5 letters • 6 guesses • 2 minutes"
+          }
+        }
+      }
+    },
+    "5 harfli kelimeler\nKlasik mod" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5-letter words\nClassic mode"
+          }
+        }
+      }
+    },
+    "6 harf • 6 tahmin • 2 dakika" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "6 letters • 6 guesses • 2 minutes"
+          }
+        }
+      }
+    },
+    "6 harfli kelimeler\nUzmanlar için" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "6-letter words\nFor experts"
+          }
+        }
+      }
+    },
+    "30 saniye ekstra süre verir" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gives 30 seconds extra time"
+          }
+        }
+      }
+    },
+    "ACEMİ" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "BEGINNER"
+          }
+        }
+      }
+    },
+    "Ana Menü" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Main Menu"
+          }
+        }
+      }
+    },
+    "Anlam bulunamadı" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meaning not found"
+          }
+        }
+      }
+    },
+    "app_version" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Version %@"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sürüm %@"
+          }
+        }
+      }
     },
     "Ayarlar" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settings"
+          }
+        }
+      }
     },
     "Başla!" : {
-
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start!"
+          }
+        }
+      }
+    },
+    "Bu taktiklerle daha başarılı olabilirsin!" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You can be more successful with these tactics!"
+          }
+        }
+      }
+    },
+    "Doğru bir harfi gösterir" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shows a correct letter"
+          }
+        }
+      }
+    },
+    "Doğru Harf & Doğru Yer" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Correct Letter & Correct Position"
+          }
+        }
+      }
+    },
+    "Doğru Harf & Yanlış Yer" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Correct Letter & Wrong Position"
+          }
+        }
+      }
+    },
+    "Ekstra Süre" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Extra Time"
+          }
+        }
+      }
+    },
+    "ELMAS" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DIAMOND"
+          }
+        }
+      }
+    },
+    "En İyi" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Best"
+          }
+        }
+      }
+    },
+    "game_lost_message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Correct word: %@"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Doğru kelime: %@"
+          }
+        }
+      }
+    },
+    "game_won_message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You found the word in %lld guesses!\n\nCorrect word: %@"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kelimeyi %lld tahminde buldun!\n\nDoğru kelime: %@"
+          }
+        }
+      }
     },
     "Geri" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Back"
+          }
+        }
+      }
+    },
+    "Gizli kelimeyi tahmin etmeye çalış" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Try to guess the hidden word"
+          }
+        }
+      }
+    },
+    "Gizli kelimeyi tahmin etmeye hazır mısın? Temel kuralları öğrenelim." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ready to guess the hidden word? Let's learn the basic rules."
+          }
+        }
+      }
+    },
+    "Harf Göster" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show Letter"
+          }
+        }
+      }
+    },
+    "Harf kelimede hiç yok" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letter is not in the word at all"
+          }
+        }
+      }
+    },
+    "Harf kelimede var ama yanlış yerde" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letter is in the word but in the wrong place"
+          }
+        }
+      }
+    },
+    "Harf kelimede var ve doğru yerde" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letter is in the word and in the right place"
+          }
+        }
+      }
+    },
+    "Harf Sil" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove Letter"
+          }
+        }
+      }
+    },
+    "Harika!" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Great!"
+          }
+        }
+      }
     },
     "Henüz oyun oynamadınız" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You haven't played any games yet"
+          }
+        }
+      }
+    },
+    "Her harf rengi sana ipucu verir. Renkleri doğru yorumla!" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Each letter color gives you a clue. Interpret the colors correctly!"
+          }
+        }
+      }
+    },
+    "Her tahmin geçerli bir Türkçe kelime olmalı" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Each guess must be a valid English word"
+          }
+        }
+      }
     },
     "İleri" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next"
+          }
+        }
+      }
+    },
+    "İpuçları" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tips"
+          }
+        }
+      }
     },
     "İPUCU" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "HINT"
+          }
+        }
+      }
+    },
+    "İpucu Göster" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show Hint"
+          }
+        }
+      }
     },
     "İstatistikler" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Statistics"
+          }
+        }
+      }
+    },
+    "İstatistiklerini kontrol ederek gelişimini izle" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Monitor your progress by checking your statistics"
+          }
+        }
+      }
+    },
+    "Joker Kazandın! 🎁" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You Won a Joker! 🎁"
+          }
+        }
+      }
+    },
+    "joker_earned_alert_message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You earned %@ %lld jokers!"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ jokerinden %lld adet kazandınız!"
+          }
+        }
+      }
+    },
+    "joker_reward_message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "For your %lld correct guesses, you earned a %@ joker!\n\nYou need %lld more guesses for the next reward!"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld doğru tahminin için %@ jokeri kazandın!\n\nSonraki ödül için %lld tahmin daha!"
+          }
+        }
+      }
+    },
+    "Jokerler" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jokers"
+          }
+        }
+      }
     },
     "Kapat" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close"
+          }
+        }
+      }
+    },
+    "Kazanma" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Win"
+          }
+        }
+      }
     },
     "Kelime Tahmin Oyunu" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Word Guessing Game"
+          }
+        }
+      }
     },
     "Kelimenin Anlamı:" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Word Meaning:"
+          }
+        }
+      }
+    },
+    "Kelimenin anlamını gösterir" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shows the meaning of the word"
+          }
+        }
+      }
+    },
+    "Kendi seviyene uygun zorluğu seç ve meydan okumaya başla!" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose the difficulty that suits your level and start the challenge!"
+          }
+        }
+      }
+    },
+    "Lingo'ya Hoş Geldin!" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Welcome to Lingo!"
+          }
+        }
+      }
+    },
+    "Lütfen bekleyiniz..." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please wait..."
+          }
+        }
+      }
     },
     "Lütfen geçerli Türkçe bir kelime girin" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please enter a valid English word"
+          }
+        }
+      }
+    },
+    "Lütfen reklamların yüklenmesini bekleyin ve tekrar deneyin." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please wait for ads to load and try again."
+          }
+        }
+      }
     },
     "Mevcut Jokerleriniz" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your Current Jokers"
+          }
+        }
+      }
     },
     "Nasıl Oynanır" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "How to Play"
+          }
+        }
+      }
+    },
+    "Oranı" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rate"
+          }
+        }
+      }
     },
     "Örnek:" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Example:"
+          }
+        }
+      }
+    },
+    "ORTA" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MEDIUM"
+          }
+        }
+      }
     },
     "OYNA" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PLAY"
+          }
+        }
+      }
+    },
+    "Oyun" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Games"
+          }
+        }
+      }
+    },
+    "Oyun Bitti 😔" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Game Over 😔"
+          }
+        }
+      }
+    },
+    "Reklam" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ad"
+          }
+        }
+      }
+    },
+    "Reklam Bulunamadı" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ad Not Found"
+          }
+        }
+      }
+    },
+    "Reklam Gösteriliyor..." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Showing Ad..."
+          }
+        }
+      }
+    },
+    "Reklam İzle" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Watch Ad"
+          }
+        }
+      }
     },
     "Reklam izleyerek ücretsiz joker kazanabilirsin! (Her reklam +3 joker)" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You can earn free jokers by watching ads! (Each ad +3 jokers)"
+          }
+        }
+      }
+    },
+    "Reklam Mevcut Değil" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ad Not Available"
+          }
+        }
+      }
+    },
+    "Reklam Tamamlanamadı" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ad Not Completed"
+          }
+        }
+      }
+    },
+    "Reklam Yok" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Ads"
+          }
+        }
+      }
+    },
+    "Reklamlar Hazır!" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ads Ready!"
+          }
+        }
+      }
+    },
+    "Reklamlar Yükleniyor" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ads Loading"
+          }
+        }
+      }
+    },
+    "Renk Kodları" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Color Codes"
+          }
+        }
+      }
+    },
+    "Sarı harflerin yerini değiştirmeyi dene" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Try changing the position of yellow letters"
+          }
+        }
+      }
+    },
+    "Seri" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Streak"
+          }
+        }
+      }
     },
     "Ses Efektleri" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sound Effects"
+          }
+        }
+      }
     },
     "Seviyeni seç ve meydan okumanı başlat!" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose your level and start your challenge!"
+          }
+        }
+      }
     },
-    "Sürüm %@" : {
-
+    "Şu anda gösterilecek reklam bulunmuyor. İnternet bağlantınızı kontrol edin ve birkaç dakika sonra tekrar deneyin." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No ads available to show right now. Check your internet connection and try again in a few minutes."
+          }
+        }
+      }
+    },
+    "Şu anda gösterilecek reklam bulunmuyor.Daha sonra tekrar deneyin." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No ads available to show right now. Please try again later."
+          }
+        }
+      }
+    },
+    "Şu Anki" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Current"
+          }
+        }
+      }
+    },
+    "Süre dolmadan kelimeyi bul!" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Find the word before time runs out!"
+          }
+        }
+      }
+    },
+    "Süreyi takip et, gerekirse joker kullan" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Track time, use jokers if needed"
+          }
+        }
+      }
     },
     "TAHMİN DAĞILIMI" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "GUESS DISTRIBUTION"
+          }
+        }
+      }
     },
-    "Tahmin: %lld" : {
-
+    "Tahmin hakkın zorluk seviyesine göre değişir" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your guess limit varies by difficulty level"
+          }
+        }
+      }
     },
     "Tamam" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        }
+      }
+    },
+    "Tebrikler! 🎉" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Congratulations! 🎉"
+          }
+        }
+      }
     },
     "Tekrar Dene" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Try Again"
+          }
+        }
+      }
+    },
+    "Toplam" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Total"
+          }
+        }
+      }
     },
     "Ücretsiz Joker Kazan" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Earn Free Jokers"
+          }
+        }
+      }
+    },
+    "Ücretsiz joker kazanmak için reklam izleyebilirsiniz" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You can watch ads to earn free jokers"
+          }
+        }
+      }
+    },
+    "Ücretsiz joker kazanmak için reklamı sonuna kadar izlemeniz gerekmektedir." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You need to watch the ad to the end to earn free jokers."
+          }
+        }
+      }
+    },
+    "UZMAN" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "EXPERT"
+          }
+        }
+      }
     },
     "WL" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "WL"
+          }
+        }
+      }
     },
     "WORD LINGO" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "WORD LINGO"
+          }
+        }
+      }
+    },
+    "Yanlış Harf" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wrong Letter"
+          }
+        }
+      }
+    },
+    "Yanlış harfleri klavyeden kaldırır" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Removes wrong letters from keyboard"
+          }
+        }
+      }
+    },
+    "Yaygın harflerle başla (A, E, İ, R, L)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start with common letters (A, E, I, O, U)"
+          }
+        }
+      }
+    },
+    "Yeni Oyun" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New Game"
+          }
+        }
+      }
+    },
+    "Yükleniyor..." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Loading..."
+          }
+        }
+      }
+    },
+    "Zorlandığında jokerler sana yardım edecek. Akıllıca kullan!" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When you're stuck, jokers will help you. Use them wisely!"
+          }
+        }
+      }
+    },
+    "Zorluk Seviyeleri" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Difficulty Levels"
+          }
+        }
+      }
     },
     "ZORLUK SEVİYESİ" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DIFFICULTY LEVEL"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

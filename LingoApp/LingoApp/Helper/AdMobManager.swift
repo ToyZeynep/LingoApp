@@ -26,9 +26,9 @@ class AdMobManager: NSObject, ObservableObject {
     }
     
     private func initializeGoogleMobileAds() {
-        // Test cihazları ayarla
+        
         MobileAds.shared.requestConfiguration.testDeviceIdentifiers = [
-            "SIMULATOR", // iOS Simulator
+            "SIMULATOR",
         ]
         
         MobileAds.shared.start { [weak self] status in

@@ -87,7 +87,7 @@ struct JokerShopView: View {
             
             Spacer()
             
-            Text("🃏 JOKER MAĞAZASI".localized)
+            Text("JOKER MAĞAZASI".localized)
                 .font(.system(size: 20, weight: .bold))
                 .foregroundColor(.white)
             
@@ -235,7 +235,7 @@ struct JokerShopView: View {
                     //FIX
                     showAlert(
                         title: "🎉 Tebrikler!".localized,
-                        message: "\(jokerType.title) jokerinden \(rewardAmount) adet kazandınız!"
+                        message: String(format: "joker_earned_alert_message".localized, rewardAmount, jokerType.title)
                     )
                 } else {
                     showAlert(

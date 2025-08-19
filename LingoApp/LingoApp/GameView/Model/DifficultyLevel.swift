@@ -32,9 +32,9 @@ enum DifficultyLevel: String, CaseIterable, Codable {
     
     var description: String {
         switch self {
-        case .easy: return "4 harfli kelimeler\nAcemiler için"
-        case .medium: return "5 harfli kelimeler\nKlasik mod"
-        case .hard: return "6 harfli kelimeler\nUzmanlar için"
+        case .easy: return "4 harfli kelimeler\nAcemiler için".localized
+        case .medium: return "5 harfli kelimeler\nKlasik mod".localized
+        case .hard: return "6 harfli kelimeler\nUzmanlar için".localized
         }
     }
     

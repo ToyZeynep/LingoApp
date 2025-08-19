@@ -74,10 +74,10 @@ struct FreeJokerButton: View {
         
         var buttonText: String {
             switch self {
-            case .ready: return "Reklam İzle"
-            case .loading: return "Yükleniyor..."
-            case .watching: return "Reklam Gösteriliyor..."
-            case .unavailable: return "Reklam Yok"
+            case .ready: return "Reklam İzle".localized
+            case .loading: return "Yükleniyor...".localized
+            case .watching: return "Reklam Gösteriliyor...".localized
+            case .unavailable: return "Reklam Yok".localized
             }
         }
         

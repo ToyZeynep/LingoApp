@@ -450,7 +450,8 @@ class GameModel: ObservableObject {
             SoundEngine.shared.play(.failure) {
                 UINotificationFeedbackGenerator().notificationOccurred(.error)
             }
-        case "tick":    SoundEngine.shared.play(.tick)
+        case "tick":
+            SoundEngine.shared.play(.tick)
         case "invalid":
             SoundEngine.shared.play(.invalid) {
                 UINotificationFeedbackGenerator().notificationOccurred(.warning)

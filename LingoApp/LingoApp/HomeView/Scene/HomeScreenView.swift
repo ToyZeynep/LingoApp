@@ -168,8 +168,7 @@ struct HomeScreenView: View {
                 Spacer()
                 
                 VStack(spacing: 5) {
-                    // FIX
-                    Text("Sürüm \(appVersion)".localized)
+                    Text(String(format: "app_version".localized, appVersion))
                         .font(.caption)
                         .foregroundColor(.white.opacity(0.5))
                     

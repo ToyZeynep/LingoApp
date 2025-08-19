@@ -129,7 +129,7 @@
 				};
 			};
 			buildConfigurationList = 21B3E0F82DFDBA9800633EB3 /* Build configuration list for PBXProject "LingoApp" */;
-			developmentRegion = en;
+			developmentRegion = tr;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,

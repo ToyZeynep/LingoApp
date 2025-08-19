@@ -116,10 +116,9 @@ struct GameView: View {
             if showGameOver {
                 CustomAlertView(
                     title: game.gameState == .won ? "Tebrikler! 🎉".localized : "Oyun Bitti 😔".localized,
-                    // FIX
                     message: game.gameState == .won ?
-                        "Kelimeyi \(game.guesses.count + 1) tahminde buldun!\n\nDoğru kelime: \(game.targetWord)" :
-                        "Doğru kelime: \(game.targetWord)",
+                        String(format: "game_won_message".localized, game.guesses.count + 1, game.targetWord) :
+                        String(format: "game_lost_message".localized, game.targetWord),
                     primaryButtonTitle: "Yeni Oyun".localized,
                     primaryAction: {
                         game.startNewGame()
@@ -136,16 +135,13 @@ struct GameView: View {
             }
             
             if showJokerReward {
-                //FIX
                 if let jokerType = game.rewardedJokerType {
                     CustomAlertView(
                         title: "Joker Kazandın! 🎁".localized,
-                        message: """
-                        \(game.totalCorrectGuesses). doğru tahminin için
-                        \(jokerType.title) jokeri kazandın!
-                        
-                        Sonraki ödül için \(game.getProgressToNextReward().needed) tahmin daha!
-                        """,
+                        message: String(format: "joker_reward_message".localized,
+                                       game.totalCorrectGuesses,
+                                       jokerType.title,
+                                       game.getProgressToNextReward().needed),
                         primaryButtonTitle: "Harika!".localized,
                         primaryAction: {},
                         icon: "gift.fill",
