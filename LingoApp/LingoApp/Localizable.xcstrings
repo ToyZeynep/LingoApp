@@ -226,6 +226,38 @@
         }
       }
     },
+    "daily_reward_message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Today you earned %lld ‘%@’!"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bugün %lld adet ‘%@’ kazandınız!"
+          }
+        }
+      }
+    },
+    "daily_reward_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Daily Reward 🎁"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Günlük Ödül 🎁"
+          }
+        }
+      }
+    },
     "Devam Et" : {
       "localizations" : {
         "en" : {
@@ -1188,6 +1220,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "DIFFICULTY LEVEL"
+          }
+        }
+      }
+    },
+    "first_day_reward_message": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "🎉 First day reward: You earned 3 of each joker!"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "🎉 İlk gün ödülü: Tüm jokerlerden 3 adet kazandın!"
           }
         }
       }

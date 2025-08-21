@@ -13,12 +13,12 @@ struct ContentView: View {
     @State private var soundEnabled = UserDefaults.standard.bool(forKey: "SoundEnabled")
     @State private var showTutorial = false
     @State private var hasSeenTutorial = UserDefaults.standard.bool(forKey: "HasSeenTutorial")
-    
-    // Dil seçimi için state'ler
-    @AppStorage("hasSelectedLanguage") private var hasSelectedLanguage: Bool = false
     @State private var showLanguageSelection = false
-    
-    // LocalizationManager'ı observe et
+    @State private var isFirstDayReward: Bool = false
+    @State private var showDailyReward = false
+    @State private var dailyRewardType: JokerType? = nil
+    @State private var dailyRewardCount: Int = 0
+    @AppStorage("hasSelectedLanguage") private var hasSelectedLanguage: Bool = false
     @ObservedObject private var localizationManager = LocalizationManager.shared
     
     enum NavigationState: Equatable {
@@ -34,8 +34,6 @@ struct ContentView: View {
                     localizationManager.setLanguage(language)
                     hasSelectedLanguage = true
                     showLanguageSelection = false
-                    
-                    // Dil seçildikten sonra tutorial kontrol et
                     checkTutorialAfterLanguage()
                 }
             } else if showTutorial {
@@ -56,6 +54,19 @@ struct ContentView: View {
                         insertion: .move(edge: .leading).combined(with: .opacity),
                         removal: .move(edge: .trailing).combined(with: .opacity)
                     ))
+                    .onAppear {
+                           if hasSelectedLanguage && hasSeenTutorial {
+                               let tempManager = JokerManager()
+                               if let reward = DailyRewardManager().claimIfNeeded(jokerManager: tempManager) {
+                                      dailyRewardType = reward.jokerType
+                                      dailyRewardCount = reward.count
+                                      isFirstDayReward = reward.isFirstDay
+                                   DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                       showDailyReward = true
+                                   }
+                               }
+                           }
+                       }
                     
                 case .difficultySelection:
                     DifficultySelectionView(
@@ -104,22 +115,34 @@ struct ContentView: View {
         .task {
             await initializeApp()
         }
-        // LocalizationManager'ın değişikliklerini dinle
         .onChange(of: localizationManager.currentLanguage) { newLanguage in
             print("🌍 ContentView: Dil değişikliği algılandı -> \(newLanguage == "tr" ? "🇹🇷 Türkçe" : "🇺🇸 English")")
+        }
+        .overlay {
+            if showDailyReward {
+                CustomAlertView(
+                    title: "daily_reward_title".localized,
+                    message: isFirstDayReward
+                        ? "first_day_reward_message".localized
+                        : String(format: "daily_reward_message".localized, dailyRewardCount, dailyRewardType?.title ?? ""),
+                    primaryButtonTitle: "Harika!".localized,
+                    primaryAction: {},
+                    icon: "gift.fill",
+                    iconColor: isFirstDayReward ? .purple : (dailyRewardType?.brightColor ?? .blue),
+                    isPresented: $showDailyReward
+                )
+            }
         }
     }
     
     // MARK: - App Initialization
     
     private func initializeApp() async {
-        // Ses ayarlarını kontrol et
         if UserDefaults.standard.object(forKey: "SoundEnabled") == nil {
             soundEnabled = true
             UserDefaults.standard.set(soundEnabled, forKey: "SoundEnabled")
         }
         
-        // Dil ve tutorial akışını kontrol et
         await MainActor.run {
             checkLaunchFlow()
         }
@@ -128,19 +151,15 @@ struct ContentView: View {
     private func checkLaunchFlow() {
         print("🚀 Uygulama başlatılıyor...")
         
-        // İlk: Dil seçimi kontrolü
         if !hasSelectedLanguage {
             print("🌍 İlk açılış: Dil seçimi gerekli")
-            // Sistem dilini otomatik algıla
             autoDetectSystemLanguage()
             showLanguageSelection = true
         }
-        // İkinci: Tutorial kontrolü
         else if !hasSeenTutorial {
             print("📖 Tutorial gerekli")
             showTutorial = true
         }
-        // Üçüncü: Ana uygulamaya geç
         else {
             print("✅ Uygulama hazır - Ana ekran gösteriliyor")
         }
@@ -155,7 +174,6 @@ struct ContentView: View {
     }
     
     private func checkTutorialAfterLanguage() {
-        // Dil seçildikten sonra tutorial kontrol et
         if !hasSeenTutorial {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 showTutorial = true
@@ -163,35 +181,28 @@ struct ContentView: View {
         }
     }
     
-    /// Telefonun sistem dilini kontrol eder (iOS 15+ uyumlu)
     private func getSystemLanguage() -> String {
-        // iOS 15 uyumlu sistem dili algılama
         let preferredLanguages = Locale.preferredLanguages
         let systemLanguageCode = preferredLanguages.first?.components(separatedBy: "-").first ?? "en"
         
-        // Desteklenen dilleri kontrol et
         let supportedLanguages = ["tr", "en"]
         
-        // Sistem dili destekleniyorsa onu kullan
         if supportedLanguages.contains(systemLanguageCode) {
             print("📱 Sistem dili tespit edildi: \(systemLanguageCode)")
             return systemLanguageCode
         }
         
-        // Türkçe locale kontrolü (tr-TR, tr-CY vs.)
         if systemLanguageCode.hasPrefix("tr") ||
            Locale.current.regionCode == "TR" {
             print("📱 Türkçe locale tespit edildi")
             return "tr"
         }
         
-        // Arapça, Kürtçe vs. Türkiye bölgesindeki diller
         if Locale.current.regionCode == "TR" {
             print("📱 Türkiye bölgesi tespit edildi, Türkçe seçiliyor")
             return "tr"
         }
         
-        // Varsayılan olarak İngilizce
         print("📱 Sistem dili desteklenmiyor, varsayılan: İngilizce")
         return "en"
     }
