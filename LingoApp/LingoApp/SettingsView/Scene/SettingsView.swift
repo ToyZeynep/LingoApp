@@ -10,7 +10,10 @@ import SwiftUI
 struct SettingsView: View {
     @Binding var soundEnabled: Bool
     @Environment(\.dismiss) private var dismiss
-    @AppStorage("selectedLanguage") private var selectedLanguage: String = "tr"
+    @ObservedObject private var localizationManager = LocalizationManager.shared
+    
+    @State private var showToast = false
+    @State private var toastMessage = ""
     
     var body: some View {
         NavigationView {
@@ -58,7 +61,6 @@ struct SettingsView: View {
                                 )
                         )
                         
-                        // Dil Seçimi
                         HStack {
                             Image(systemName: "globe")
                                 .font(.title2)
@@ -77,7 +79,7 @@ struct SettingsView: View {
                                 } label: {
                                     HStack {
                                         Text("🇹🇷 Türkçe")
-                                        if selectedLanguage == "tr" {
+                                        if localizationManager.currentLanguage == "tr" {
                                             Spacer()
                                             Image(systemName: "checkmark")
                                         }
@@ -89,7 +91,7 @@ struct SettingsView: View {
                                 } label: {
                                     HStack {
                                         Text("🇺🇸 English")
-                                        if selectedLanguage == "en" {
+                                        if localizationManager.currentLanguage == "en" {
                                             Spacer()
                                             Image(systemName: "checkmark")
                                         }
@@ -97,7 +99,7 @@ struct SettingsView: View {
                                 }
                             } label: {
                                 HStack(spacing: 8) {
-                                    Text(selectedLanguage == "tr" ? "🇹🇷 Türkçe" : "🇺🇸 English")
+                                    Text(localizationManager.currentLanguage == "tr" ? "🇹🇷 Türkçe" : "🇺🇸 English")
                                         .font(.system(size: 16, weight: .medium))
                                         .foregroundColor(.white)
                                     
@@ -132,6 +134,42 @@ struct SettingsView: View {
                     
                     Spacer()
                 }
+                
+                // Toast mesajı
+                if showToast {
+                    VStack {
+                        Spacer()
+                        
+                        HStack {
+                            Image(systemName: "checkmark.circle.fill")
+                                .font(.system(size: 16))
+                                .foregroundColor(.green)
+                            
+                            Text(toastMessage)
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundColor(.white)
+                            
+                            Spacer()
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 12)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(.ultraThickMaterial)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(.green.opacity(0.3), lineWidth: 1)
+                                )
+                                .shadow(color: .black.opacity(0.3), radius: 10, x: 0, y: 5)
+                        )
+                        .padding(.horizontal, 20)
+                        .padding(.bottom, 50)
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .bottom).combined(with: .opacity),
+                            removal: .move(edge: .bottom).combined(with: .opacity)
+                        ))
+                    }
+                }
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -155,19 +193,17 @@ struct SettingsView: View {
             UserDefaults.standard.set(newValue, forKey: "SoundEnabled")
             SoundEngine.shared.enabled = newValue
         }
-        // AppStorage otomatik algılar, notification gerekmez
     }
     
     private func changeLanguage(to languageCode: String) {
         // Eski dili kaydet
-        let oldLanguage = selectedLanguage
+        let oldLanguage = localizationManager.currentLanguage
         
-        // Yeni dili ayarla
-        selectedLanguage = languageCode
+        // Aynı dil seçildiyse hiçbir şey yapma
+        guard oldLanguage != languageCode else { return }
         
-        // App'in dilini değiştirmek için
-        UserDefaults.standard.set([languageCode], forKey: "AppleLanguages")
-        UserDefaults.standard.synchronize()
+        // Yeni dili ayarla - LocalizationManager otomatik UI'ı güncelleyecek
+        localizationManager.setLanguage(languageCode)
         
         // Haptic feedback
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
@@ -178,17 +214,23 @@ struct SettingsView: View {
         let languageDisplay = languageCode == "tr" ? "🇹🇷 Türkçe" : "🇺🇸 English"
         print("🌍 Dil değiştirildi: \(oldLanguage) → \(languageCode) (\(languageDisplay))")
         
-        // Kullanıcıya bilgi ver (opsiyonel)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-               let window = windowScene.windows.first {
-                let alert = UIAlertController(
-                    title: "language_change_title".localized,
-                    message: "language_change_message".localized,
-                    preferredStyle: .alert
-                )
-                alert.addAction(UIAlertAction(title: "Tamam".localized, style: .default))
-                window.rootViewController?.present(alert, animated: true)
+        // Toast mesajını göster
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            let message = languageCode == "tr" ?
+                "Dil Türkçe olarak değiştirildi" :
+                "Language changed to English"
+            
+            toastMessage = message
+            
+            withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
+                showToast = true
+            }
+            
+            // Toast'ı 2.5 saniye sonra gizle
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+                withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                    showToast = false
+                }
             }
         }
     }

@@ -18,19 +18,54 @@
       }
     },
     "© 2025 Word Lingo" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "© 2025 Word Lingo"
+          }
+        }
+      }
     },
     "⚠️" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⚠️"
+          }
+        }
+      }
     },
     "🇹🇷 Türkçe" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🇹🇷 Türkçe"
+          }
+        }
+      }
     },
     "🇺🇸 English" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🇺🇸 English"
+          }
+        }
+      }
     },
     "🎯" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🎯"
+          }
+        }
+      }
     },
     "4 harf • 6 tahmin • 2.5 dakika" : {
       "localizations" : {
@@ -149,6 +184,17 @@
         }
       }
     },
+    "Atla" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skip"
+          }
+        }
+      }
+    },
     "Ayarlar" : {
       "localizations" : {
         "en" : {
@@ -160,7 +206,7 @@
       }
     },
     "Başla!" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -176,6 +222,37 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "You can be more successful with these tactics!"
+          }
+        }
+      }
+    },
+    "Devam Et" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continue"
+          }
+        }
+      }
+    },
+    "Dil" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Language"
+          }
+        }
+      }
+    },
+    "Dil Seçimi" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Language Selection"
           }
         }
       }
@@ -298,6 +375,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ready to guess the hidden word? Let's learn the basic rules."
+          }
+        }
+      }
+    },
+    "Hangi dilde oynamak istiyorsun?" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Which language would you like to play in?"
           }
         }
       }
@@ -941,6 +1028,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Try Again"
+          }
+        }
+      }
+    },
+    "Telefon Dilimi Kullan" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use Phone Language"
           }
         }
       }

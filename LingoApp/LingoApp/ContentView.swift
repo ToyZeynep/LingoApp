@@ -16,8 +16,10 @@ struct ContentView: View {
     
     // Dil seçimi için state'ler
     @AppStorage("hasSelectedLanguage") private var hasSelectedLanguage: Bool = false
-    @AppStorage("selectedLanguage") private var selectedLanguage: String = "tr"
     @State private var showLanguageSelection = false
+    
+    // LocalizationManager'ı observe et
+    @ObservedObject private var localizationManager = LocalizationManager.shared
     
     enum NavigationState: Equatable {
         case home
@@ -29,7 +31,7 @@ struct ContentView: View {
         Group {
             if showLanguageSelection {
                 LanguageSelectionView { language in
-                    selectedLanguage = language
+                    localizationManager.setLanguage(language)
                     hasSelectedLanguage = true
                     showLanguageSelection = false
                     
@@ -102,9 +104,9 @@ struct ContentView: View {
         .task {
             await initializeApp()
         }
-        .onChange(of: selectedLanguage) { newLanguage in
-            // Dil değiştiğinde log yap (GameModel'ler AppStorage ile otomatik algılar)
-            print("🌍 ContentView: Dil değişikliği -> \(newLanguage == "tr" ? "🇹🇷 Türkçe" : "🇺🇸 English")")
+        // LocalizationManager'ın değişikliklerini dinle
+        .onChange(of: localizationManager.currentLanguage) { newLanguage in
+            print("🌍 ContentView: Dil değişikliği algılandı -> \(newLanguage == "tr" ? "🇹🇷 Türkçe" : "🇺🇸 English")")
         }
     }
     
@@ -146,7 +148,7 @@ struct ContentView: View {
     
     private func autoDetectSystemLanguage() {
         let systemLanguage = getSystemLanguage()
-        selectedLanguage = systemLanguage
+        localizationManager.setLanguage(systemLanguage)
         
         let languageDisplay = systemLanguage == "tr" ? "🇹🇷 Türkçe" : "🇺🇸 English"
         print("📱 Sistem dili otomatik algılandı: \(languageDisplay)")
@@ -218,30 +220,3 @@ struct ContentView_Previews: PreviewProvider {
             .environment(\.locale, .init(identifier: "en"))
     }
 }
-
-// MARK: - Usage Documentation
-/*
-Bu ContentView şimdi şu akışı takip eder:
-
-📱 UYGULAMA BAŞLANGICI:
-1. Sistem dili otomatik algılanır
-2. İlk açılışta dil seçimi ekranı gösterilir (sistem dili önceden seçili)
-3. Kullanıcı isterse farklı dil seçer veya "Telefon Dilimi Kullan" der
-4. Dil ayarlandıktan sonra tutorial gösterilir (seçilen dilde)
-5. Ana uygulamaya geçiş
-
-🔄 SONRAKI AÇILIŞLAR:
-- Direkt ana uygulamaya geçer
-- Önceden seçilen dilde çalışır
-
-🌍 DIL DEĞİŞİKLİĞİ:
-- Settings'ten manuel değiştirilebilir
-- Tüm GameModel'ler otomatik güncellenir
-- Notification sistemi ile senkronize olur
-
-📊 SİSTEM DİLİ ALGILAMASI:
-- Türkçe iPhone → Türkçe
-- İngilizce iPhone → İngilizce
-- Türkiye'deki diğer diller → Türkçe
-- Desteklenmeyen diller → İngilizce
-*/
