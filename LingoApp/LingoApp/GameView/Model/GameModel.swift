@@ -33,7 +33,7 @@ class GameModel: ObservableObject {
     var wordLength = 5
     var gameDuration: TimeInterval = 120
     
-    private let wordUploader = WordUploader()
+    private let wordUploader = WordUploader.shared
     
     private var audioPlayer: AVAudioPlayer?
     private var gameTimer: Timer?
@@ -62,6 +62,8 @@ class GameModel: ObservableObject {
     private var isEnglishMode: Bool {
         return selectedLanguage == "en"
     }
+    
+    var isEnglishKeyboard: Bool { isEnglishMode }
     
     var displayedGuessCount: Int {
         return visibleGuesses
@@ -123,52 +125,50 @@ class GameModel: ObservableObject {
     // MARK: - Language-Aware Word Fetching
     
     private func fetchTurkishWord() {
-        wordUploader.fetchRandomWordWithMeaning(length: wordLength) { [weak self] wordData in
+        DispatchQueue.global().async { [weak self] in
+            guard let self = self else { return }
+            let result = self.wordUploader.fetchRandomTurkishWord(length: self.wordLength)
+
             DispatchQueue.main.async {
-                guard let self = self else { return }
-                
-                if let wordData = wordData {
-                    self.targetWord = wordData.word.turkishUppercased
-                    self.currentWordMeaning = wordData.meaning
+                if let wd = result {
+                    self.targetWord = wd.word.turkishUppercased
+                    self.currentWordMeaning = wd.mean
                     print("🇹🇷 Türkçe kelime: \(self.targetWord) - Anlam: \(self.currentWordMeaning)")
-                    self.isLoadingWord = false
-                    self.startTimer()
                 } else {
-                    // Türkçe fallback
-                    let fallbackData = self.getFallbackTurkishWordWithMeaning()
-                    self.targetWord = fallbackData.word
-                    self.currentWordMeaning = fallbackData.meaning
-                    print("⚠️ Türkçe fallback kelime kullanıldı: \(self.targetWord)")
-                    self.isLoadingWord = false
-                    self.startTimer()
+                    let fb = self.getFallbackTurkishWordWithMeaning()
+                    self.targetWord = fb.word
+                    self.currentWordMeaning = fb.meaning
+                    print("⚠️ Türkçe fallback kelime: \(self.targetWord)")
                 }
+                self.isLoadingWord = false
+                self.startTimer()
             }
         }
     }
+
     
     private func fetchEnglishWord() {
-        wordUploader.fetchRandomEnglishWordWithMeaning(length: wordLength) { [weak self] wordData in
+        DispatchQueue.global().async { [weak self] in
+            guard let self = self else { return }
+            let result = self.wordUploader.fetchRandomEnglishWord(length: self.wordLength)
+
             DispatchQueue.main.async {
-                guard let self = self else { return }
-                
-                if let wordData = wordData {
-                    self.targetWord = wordData.word.uppercased()
-                    self.currentWordMeaning = wordData.meaning
+                if let wd = result {
+                    self.targetWord = wd.word.uppercased()
+                    self.currentWordMeaning = wd.mean
                     print("🇺🇸 English word: \(self.targetWord) - Meaning: \(self.currentWordMeaning)")
-                    self.isLoadingWord = false
-                    self.startTimer()
                 } else {
-                    // İngilizce fallback
-                    let fallbackData = self.getFallbackEnglishWordWithMeaning()
-                    self.targetWord = fallbackData.word
-                    self.currentWordMeaning = fallbackData.meaning
-                    print("⚠️ English fallback word used: \(self.targetWord)")
-                    self.isLoadingWord = false
-                    self.startTimer()
+                    let fb = self.getFallbackEnglishWordWithMeaning()
+                    self.targetWord = fb.word
+                    self.currentWordMeaning = fb.meaning
+                    print("⚠️ English fallback word: \(self.targetWord)")
                 }
+                self.isLoadingWord = false
+                self.startTimer()
             }
         }
     }
+
     
     // MARK: - Fallback Words
     
@@ -288,15 +288,19 @@ class GameModel: ObservableObject {
     
     private func validateWordAndProcess(_ guess: String) {
         if isEnglishMode {
-            wordUploader.isValidEnglishWord(guess) { [weak self] (isValid: Bool) in
+            DispatchQueue.global().async { [weak self] in
+                guard let self = self else { return }
+                let isValid = self.wordUploader.isValidEnglishWord(guess)
                 DispatchQueue.main.async {
-                    self?.handleValidationResult(isValid: isValid, guess: guess)
+                    self.handleValidationResult(isValid: isValid, guess: guess)
                 }
             }
         } else {
-            wordUploader.isValidWord(guess) { [weak self] (isValid: Bool) in
+            DispatchQueue.global().async { [weak self] in
+                guard let self = self else { return }
+                let isValid = self.wordUploader.isValidTurkishWord(guess)
                 DispatchQueue.main.async {
-                    self?.handleValidationResult(isValid: isValid, guess: guess)
+                    self.handleValidationResult(isValid: isValid, guess: guess)
                 }
             }
         }

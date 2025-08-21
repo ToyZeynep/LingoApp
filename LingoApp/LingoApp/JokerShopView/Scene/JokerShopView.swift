@@ -234,7 +234,9 @@ struct JokerShopView: View {
                     jokerManager.addJoker(jokerType, count: rewardAmount)
                     showAlert(
                         title: "🎉 Tebrikler!".localized,
-                        message: String(format: "joker_earned_alert_message".localized, rewardAmount, jokerType.title)
+                        message: String(format: NSLocalizedString("joker_earned_alert_message", comment: ""),
+                                        rewardAmount, jokerType.title)
+
                     )
                 } else {
                     showAlert(

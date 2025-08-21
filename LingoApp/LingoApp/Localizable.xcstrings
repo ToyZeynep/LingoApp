@@ -565,13 +565,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "You earned %@ %lld jokers!"
+            "value" : "You earned %lld %@ jokers!"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ jokerinden %lld adet kazandınız!"
+            "value" : "%lld adet %@ jokerinden kazandınız!"
           }
         }
       }

@@ -61,7 +61,7 @@ struct CustomAlertView: View {
                 if let wordMeaning = wordMeaning, !wordMeaning.isEmpty {
                     VStack(spacing: 5) {
                         
-                        Text("Kelimenin Anlamı:")
+                        Text("Kelimenin Anlamı:".localized)
                             .font(.system(size: 14, weight: .semibold))
                         
                         

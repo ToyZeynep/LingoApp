@@ -10,75 +10,71 @@ import SwiftUI
 struct KeyboardView: View {
     @ObservedObject var game: GameModel
     
-    private let keyboardRows = [
-        ["E", "R", "T", "Y", "U", "I", "O", "P", "Ğ", "Ü"],
-        ["A", "S", "D", "F", "G", "H", "J", "K", "L", "Ş", "İ"],
-        ["SİL", "Z", "C", "V", "B", "N", "M", "Ö", "Ç", "ENTER"]
+    private let keyboardRowsTR: [[String]] = [
+        ["E","R","T","Y","U","I","O","P","Ğ","Ü"],
+        ["A","S","D","F","G","H","J","K","L","Ş","İ"],
+        ["SİL","Z","C","V","B","N","M","Ö","Ç","ENTER"]
     ]
     
+    private let keyboardRowsEN: [[String]] = [
+        ["Q","W","E","R","T","Y","U","I","O","P"],
+        ["A","S","D","F","G","H","J","K","L"],
+        ["DEL","Z","X","C","V","B","N","M","ENTER"]
+    ]
+    
+    private var isEnglish: Bool { game.isEnglishKeyboard }
+    private var rows: [[String]] { isEnglish ? keyboardRowsEN : keyboardRowsTR }
+    private var deleteKeyLabel: String { isEnglish ? "DEL" : "SİL".localized }
+    private let enterKeyLabel = "ENTER"
+    
     private var remainingLettersNeeded: Int {
-        return game.wordLength - game.revealedPositions.count
+        game.wordLength - game.revealedPositions.count
     }
     
     var body: some View {
         VStack(spacing: 8) {
-            ForEach(0..<3, id: \.self) { rowIndex in
+            ForEach(rows.indices, id: \.self) { rowIndex in
                 HStack(spacing: 3) {
-                    ForEach(keyboardRows[rowIndex], id: \.self) { key in
-                        if key == "SİL".localized {
-                            Button(action: {
-                                game.deleteLetter()
-                            }) {
+                    ForEach(rows[rowIndex], id: \.self) { key in
+                        if key == deleteKeyLabel {
+                            Button(action: { game.deleteLetter() }) {
                                 Image(systemName: "delete.left.fill")
                                     .font(.system(size: 18, weight: .medium))
                             }
                             .keyboardButtonStyle(
-                                width: (UIScreen.main.bounds.width - 30) / 9.5,
+                                width: keyWidth(for: rows[rowIndex].count),
                                 height: 50,
                                 fontSize: 16,
                                 backgroundColor: .red.opacity(0.85),
                                 textColor: .white
                             )
                             .disabled(game.currentGuess.isEmpty || game.gameState != .playing)
-                        } else if key == "ENTER" {
-                            Button(action: {
-                                game.makeGuess()
-                            }) {
+                            
+                        } else if key == enterKeyLabel {
+                            Button(action: { game.makeGuess() }) {
                                 Image(systemName: "return")
                                     .font(.system(size: 20, weight: .bold))
                             }
                             .keyboardButtonStyle(
-                                width: (UIScreen.main.bounds.width - 30) / 9.5,
+                                width: keyWidth(for: rows[rowIndex].count),
                                 height: 50,
                                 fontSize: 16,
                                 backgroundColor: .cyan,
                                 textColor: .white
                             )
                             .disabled(game.currentGuess.count != remainingLettersNeeded || game.gameState != .playing)
+                            
                         } else {
                             let isRemoved = game.jokerManager.removedLetters.contains(Character(key))
-                            
-                            Button(action: {
-                                if !isRemoved {
-                                    game.addLetter(key)
-                                }
-                            }) {
+                            Button(action: { if !isRemoved { game.addLetter(key) } }) {
                                 Text(key)
                             }
                             .keyboardButtonStyle(
-                                width: rowIndex == 0 ?
-                                    (UIScreen.main.bounds.width - 35) / 10.2 :
-                                    rowIndex == 1 ?
-                                    (UIScreen.main.bounds.width - 38) / 11.2 :
-                                    (UIScreen.main.bounds.width - 32) / 11.5,
+                                width: keyWidth(for: rows[rowIndex].count),
                                 height: 50,
                                 fontSize: 18,
-                                backgroundColor: isRemoved ?
-                                    .gray.opacity(0.3) :
-                                    getKeyColor(for: key),
-                                textColor: isRemoved ?
-                                    .gray.opacity(0.5) :
-                                    getKeyTextColor(for: key)
+                                backgroundColor: isRemoved ? .gray.opacity(0.3) : getKeyColor(for: key),
+                                textColor: isRemoved ? .gray.opacity(0.5) : getKeyTextColor(for: key)
                             )
                             .disabled(game.gameState != .playing || isRemoved)
                             .overlay(
@@ -95,6 +91,13 @@ struct KeyboardView: View {
             }
         }
         .frame(height: 170)
+    }
+    
+    private func keyWidth(for count: Int) -> CGFloat {
+        let horizontalPadding: CGFloat = 30
+        let spacingPerRow: CGFloat = CGFloat(count - 1) * 3
+        let total = UIScreen.main.bounds.width - horizontalPadding - spacingPerRow
+        return max(30, total / CGFloat(count) * 0.98)
     }
     
     private func getKeyColor(for key: String) -> Color {
