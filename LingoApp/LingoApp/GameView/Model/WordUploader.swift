@@ -544,3 +544,296 @@ class WordManager: ObservableObject {
         }
     }
 }
+
+// MARK: - English Words Extension
+extension WordUploader {
+    
+    /// İngilizce kelimeler collection'ı
+    private func englishWordsCollection(length: Int) -> CollectionReference {
+        return db.collection("english_words")
+            .document("categories")
+            .collection("words\(length)")
+    }
+    
+    // MARK: - English Word Methods (Same as Turkish)
+    
+    /// Belirtilen uzunlukta rastgele İngilizce kelime getirir (anlamıyla birlikte)
+    func fetchRandomEnglishWordWithMeaning(length: Int, completion: @escaping (WordData?) -> Void) {
+        guard length >= 4 && length <= 6 else {
+            print("❌ Geçersiz İngilizce kelime uzunluğu: \(length). 4-6 arası olmalı.")
+            completion(nil)
+            return
+        }
+        
+        englishWordsCollection(length: length)
+            .getDocuments { snapshot, error in
+                if let error = error {
+                    print("❌ İngilizce kelime çekme hatası: \(error)")
+                    completion(nil)
+                    return
+                }
+                
+                let wordDataList = snapshot?.documents.compactMap { doc -> WordData? in
+                    let data = doc.data()
+                    guard let word = data["word"] as? String else {
+                        return nil
+                    }
+                    let meaning = data["meaning"] as? String ?? ""
+                    return WordData(word: word, meaning: meaning)
+                } ?? []
+                
+                if wordDataList.isEmpty {
+                    print("⚠️ \(length) harfli İngilizce kelime bulunamadı")
+                    completion(nil)
+                } else {
+                    let selectedWord = wordDataList.randomElement()!
+                    print("🎯 Çekilen İngilizce Kelime: '\(selectedWord.word.uppercased())'")
+                    print("📖 Anlamı: \(selectedWord.meaning)")
+                    completion(selectedWord)
+                }
+            }
+    }
+    
+    /// Belirtilen uzunlukta rastgele İngilizce kelime getirir (sadece kelime)
+    func fetchRandomEnglishWord(length: Int, completion: @escaping (String?) -> Void) {
+        guard length >= 4 && length <= 6 else {
+            print("❌ Geçersiz İngilizce kelime uzunluğu: \(length). 4-6 arası olmalı.")
+            completion(nil)
+            return
+        }
+        
+        englishWordsCollection(length: length)
+            .limit(to: 50)
+            .getDocuments { snapshot, error in
+                if let error = error {
+                    print("❌ İngilizce kelime çekme hatası: \(error)")
+                    completion(nil)
+                    return
+                }
+                
+                let words = snapshot?.documents.compactMap { doc in
+                    doc.data()["word"] as? String
+                } ?? []
+                
+                if words.isEmpty {
+                    print("⚠️ \(length) harfli İngilizce kelime bulunamadı")
+                    completion(nil)
+                } else {
+                    let selectedWord = words.randomElement()!
+                    print("🎯 Çekilen İngilizce Kelime: '\(selectedWord.uppercased())' (\(length) harf)")
+                    print("📝 Kaynak: İngilizce kelimeler collection'ı")
+                    completion(selectedWord)
+                }
+            }
+    }
+    
+    /// Belirtilen uzunlukta tüm İngilizce kelimeleri getirir (anlamlarıyla birlikte)
+    func fetchEnglishWordsWithMeanings(length: Int, completion: @escaping ([WordData]) -> Void) {
+        guard length >= 4 && length <= 6 else {
+            print("❌ Geçersiz İngilizce kelime uzunluğu: \(length). 4-6 arası olmalı.")
+            completion([])
+            return
+        }
+        
+        englishWordsCollection(length: length)
+            .getDocuments { snapshot, error in
+                if let error = error {
+                    print("❌ İngilizce kelimeler çekme hatası: \(error)")
+                    completion([])
+                    return
+                }
+                
+                let wordDataList = snapshot?.documents.compactMap { doc -> WordData? in
+                    let data = doc.data()
+                    guard let word = data["word"] as? String else {
+                        return nil
+                    }
+                    let meaning = data["meaning"] as? String ?? ""
+                    return WordData(word: word, meaning: meaning)
+                } ?? []
+                
+                print("✅ \(length) harfli \(wordDataList.count) İngilizce kelime getirildi")
+                completion(wordDataList)
+            }
+    }
+    
+    /// Belirtilen uzunlukta tüm İngilizce kelimeleri getirir (sadece kelimeler)
+    func fetchEnglishWords(length: Int, completion: @escaping ([String]) -> Void) {
+        guard length >= 4 && length <= 6 else {
+            print("❌ Geçersiz İngilizce kelime uzunluğu: \(length). 4-6 arası olmalı.")
+            completion([])
+            return
+        }
+        
+        englishWordsCollection(length: length)
+            .getDocuments { snapshot, error in
+                if let error = error {
+                    print("❌ İngilizce kelimeler çekme hatası: \(error)")
+                    completion([])
+                    return
+                }
+                
+                let words = snapshot?.documents.compactMap { doc in
+                    doc.data()["word"] as? String
+                } ?? []
+                
+                print("✅ \(length) harfli \(words.count) İngilizce kelime getirildi")
+                completion(words)
+            }
+    }
+    
+    // MARK: - English Words Async/Await
+    
+    func fetchEnglishWordsWithMeaningsAsync(length: Int) async throws -> [WordData] {
+        guard length >= 4 && length <= 6 else {
+            throw WordError.invalidLength
+        }
+        
+        let snapshot = try await englishWordsCollection(length: length)
+            .getDocuments()
+        
+        let wordDataList = snapshot.documents.compactMap { doc -> WordData? in
+            let data = doc.data()
+            guard let word = data["word"] as? String else {
+                return nil
+            }
+            let meaning = data["meaning"] as? String ?? ""
+            return WordData(word: word, meaning: meaning)
+        }
+        
+        print("✅ \(length) harfli \(wordDataList.count) İngilizce kelime getirildi (async)")
+        return wordDataList
+    }
+    
+    func fetchEnglishWordsAsync(length: Int) async throws -> [String] {
+        guard length >= 4 && length <= 6 else {
+            throw WordError.invalidLength
+        }
+        
+        let snapshot = try await englishWordsCollection(length: length)
+            .getDocuments()
+        
+        let words = snapshot.documents.compactMap { doc in
+            doc.data()["word"] as? String
+        }
+        
+        print("✅ \(length) harfli \(words.count) İngilizce kelime getirildi (async)")
+        return words
+    }
+    
+    func fetchRandomEnglishWordWithMeaningAsync(length: Int) async throws -> WordData? {
+        let words = try await fetchEnglishWordsWithMeaningsAsync(length: length)
+        if let selectedWord = words.randomElement() {
+            print("🎯 Çekilen İngilizce Kelime (Async): '\(selectedWord.word.uppercased())'")
+            print("📖 Anlamı: \(selectedWord.meaning)")
+            return selectedWord
+        }
+        return nil
+    }
+    
+    func fetchRandomEnglishWordAsync(length: Int) async throws -> String? {
+        let words = try await fetchEnglishWordsAsync(length: length)
+        if let selectedWord = words.randomElement() {
+            print("🎯 Çekilen İngilizce Kelime (Async): '\(selectedWord.uppercased())' (\(length) harf)")
+            return selectedWord
+        }
+        return nil
+    }
+    
+    // MARK: - English Word Validation
+    
+    /// İngilizce kelimenin veritabanında olup olmadığını kontrol eder
+    func isValidEnglishWord(_ word: String, completion: @escaping (Bool) -> Void) {
+        let length = word.count
+        guard length >= 4 && length <= 6 else {
+            completion(false)
+            return
+        }
+        
+        let lowercasedWord = word.lowercased()
+        
+        englishWordsCollection(length: length)
+            .whereField("word", isEqualTo: lowercasedWord)
+            .getDocuments { snapshot, error in
+                if let error = error {
+                    print("❌ İngilizce kelime doğrulama hatası: \(error)")
+                    completion(false)
+                    return
+                }
+                
+                let isValid = !(snapshot?.documents.isEmpty ?? true)
+                print("✅ İngilizce kelime doğrulama: '\(word)' -> \(isValid)")
+                completion(isValid)
+            }
+    }
+    
+    /// Async/await version of English word validation
+    func isValidEnglishWordAsync(_ word: String) async throws -> Bool {
+        let length = word.count
+        guard length >= 4 && length <= 6 else {
+            return false
+        }
+        
+        let lowercasedWord = word.lowercased()
+        
+        let snapshot = try await englishWordsCollection(length: length)
+            .whereField("word", isEqualTo: lowercasedWord)
+            .getDocuments()
+        
+        let isValid = !snapshot.documents.isEmpty
+        print("✅ İngilizce kelime doğrulama (async): '\(word)' -> \(isValid)")
+        return isValid
+    }
+}
+
+// MARK: - WordManager English Extensions
+extension WordManager {
+    
+    func loadRandomEnglishWord(length: Int) {
+        isLoading = true
+        errorMessage = ""
+        
+        wordUploader.fetchRandomEnglishWord(length: length) { [weak self] word in
+            DispatchQueue.main.async {
+                self?.isLoading = false
+                if let word = word {
+                    self?.currentWord = word.uppercased()
+                } else {
+                    self?.errorMessage = "İngilizce kelime yüklenemedi"
+                }
+            }
+        }
+    }
+    
+    /// Rastgele İngilizce kelime yükle (anlamıyla birlikte)
+    func loadRandomEnglishWordWithMeaning(length: Int) {
+        isLoading = true
+        errorMessage = ""
+        
+        wordUploader.fetchRandomEnglishWordWithMeaning(length: length) { [weak self] wordData in
+            DispatchQueue.main.async {
+                self?.isLoading = false
+                if let wordData = wordData {
+                    self?.currentWordWithMeaning = wordData
+                    self?.currentWord = wordData.word.uppercased()
+                    
+                    // Console'a yazdır
+                    print("🎯 UI'a Yüklenen İngilizce Kelime: '\(wordData.word.uppercased())'")
+                    print("📖 Anlamı: \(wordData.meaning)")
+                } else {
+                    self?.errorMessage = "Anlamlı İngilizce kelime yüklenemedi"
+                    print("❌ UI'a İngilizce kelime yüklenemedi")
+                }
+            }
+        }
+    }
+    
+    /// İngilizce kelime doğrulama
+    func validateEnglishWord(_ guess: String, completion: @escaping (Bool) -> Void) {
+        wordUploader.isValidEnglishWord(guess) { isValid in
+            DispatchQueue.main.async {
+                completion(isValid)
+            }
+        }
+    }
+}

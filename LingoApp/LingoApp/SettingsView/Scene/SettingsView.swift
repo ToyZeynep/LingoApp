@@ -10,6 +10,7 @@ import SwiftUI
 struct SettingsView: View {
     @Binding var soundEnabled: Bool
     @Environment(\.dismiss) private var dismiss
+    @AppStorage("selectedLanguage") private var selectedLanguage: String = "tr"
     
     var body: some View {
         NavigationView {
@@ -56,6 +57,76 @@ struct SettingsView: View {
                                         .stroke(.white.opacity(0.2), lineWidth: 1)
                                 )
                         )
+                        
+                        // Dil Seçimi
+                        HStack {
+                            Image(systemName: "globe")
+                                .font(.title2)
+                                .foregroundColor(.cyan)
+                                .frame(width: 30)
+                            
+                            Text("Dil".localized)
+                                .font(.system(size: 18, weight: .medium))
+                                .foregroundColor(.white)
+                            
+                            Spacer()
+                            
+                            Menu {
+                                Button {
+                                    changeLanguage(to: "tr")
+                                } label: {
+                                    HStack {
+                                        Text("🇹🇷 Türkçe")
+                                        if selectedLanguage == "tr" {
+                                            Spacer()
+                                            Image(systemName: "checkmark")
+                                        }
+                                    }
+                                }
+                                
+                                Button {
+                                    changeLanguage(to: "en")
+                                } label: {
+                                    HStack {
+                                        Text("🇺🇸 English")
+                                        if selectedLanguage == "en" {
+                                            Spacer()
+                                            Image(systemName: "checkmark")
+                                        }
+                                    }
+                                }
+                            } label: {
+                                HStack(spacing: 8) {
+                                    Text(selectedLanguage == "tr" ? "🇹🇷 Türkçe" : "🇺🇸 English")
+                                        .font(.system(size: 16, weight: .medium))
+                                        .foregroundColor(.white)
+                                    
+                                    Image(systemName: "chevron.down")
+                                        .font(.system(size: 12, weight: .medium))
+                                        .foregroundColor(.white.opacity(0.7))
+                                }
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 8)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .fill(.white.opacity(0.1))
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 8)
+                                                .stroke(.white.opacity(0.2), lineWidth: 1)
+                                        )
+                                )
+                            }
+                        }
+                        .padding(.horizontal, 25)
+                        .padding(.vertical, 16)
+                        .background(
+                            RoundedRectangle(cornerRadius: 15)
+                                .fill(.ultraThinMaterial)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 15)
+                                        .stroke(.white.opacity(0.2), lineWidth: 1)
+                                )
+                        )
                     }
                     .padding(.horizontal, 20)
                     
@@ -83,6 +154,42 @@ struct SettingsView: View {
         .onChange(of: soundEnabled) { newValue in
             UserDefaults.standard.set(newValue, forKey: "SoundEnabled")
             SoundEngine.shared.enabled = newValue
+        }
+        // AppStorage otomatik algılar, notification gerekmez
+    }
+    
+    private func changeLanguage(to languageCode: String) {
+        // Eski dili kaydet
+        let oldLanguage = selectedLanguage
+        
+        // Yeni dili ayarla
+        selectedLanguage = languageCode
+        
+        // App'in dilini değiştirmek için
+        UserDefaults.standard.set([languageCode], forKey: "AppleLanguages")
+        UserDefaults.standard.synchronize()
+        
+        // Haptic feedback
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        
+        // Ses efekti
+        SoundEngine.shared.play(.click)
+        
+        let languageDisplay = languageCode == "tr" ? "🇹🇷 Türkçe" : "🇺🇸 English"
+        print("🌍 Dil değiştirildi: \(oldLanguage) → \(languageCode) (\(languageDisplay))")
+        
+        // Kullanıcıya bilgi ver (opsiyonel)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let window = windowScene.windows.first {
+                let alert = UIAlertController(
+                    title: "language_change_title".localized,
+                    message: "language_change_message".localized,
+                    preferredStyle: .alert
+                )
+                alert.addAction(UIAlertAction(title: "Tamam".localized, style: .default))
+                window.rootViewController?.present(alert, animated: true)
+            }
         }
     }
 }

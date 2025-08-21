@@ -17,6 +17,7 @@ struct GameView: View {
     @State private var showGameOver = false
     @State private var showInvalidWord = false
     @State private var showJokerReward = false
+    @State private var isJokerShopPresented = false // Yeni state
     
     init(difficulty: DifficultyLevel, soundEnabled: Binding<Bool>, onBackToMenu: @escaping () -> Void) {
         self.difficulty = difficulty
@@ -85,6 +86,13 @@ struct GameView: View {
                             
                             GameBoard(game: game)
                                 .padding(.horizontal)
+                            
+                            // Joker view'ı güncelledik
+                            JokerCompactView(
+                                game: game,
+                                isJokerShopPresented: $isJokerShopPresented
+                            )
+                            .padding(.horizontal)
                             
                             if game.showHintText {
                                 HintView(meaning: game.currentWordMeaning)
@@ -175,6 +183,14 @@ struct GameView: View {
             showJokerReward = newValue
             if !newValue {
                 game.showJokerRewardAlert = false
+            }
+        }
+        // Timer'ı kontrol eden yeni onChange
+        .onChange(of: isJokerShopPresented) { isPresented in
+            if isPresented {
+                game.pauseTimer()
+            } else {
+                game.resumeTimer()
             }
         }
     }

@@ -232,7 +232,6 @@ struct JokerShopView: View {
                 if success, let jokerType = selectedJokerType {
                     let rewardAmount = 3
                     jokerManager.addJoker(jokerType, count: rewardAmount)
-                    //FIX
                     showAlert(
                         title: "🎉 Tebrikler!".localized,
                         message: String(format: "joker_earned_alert_message".localized, rewardAmount, jokerType.title)

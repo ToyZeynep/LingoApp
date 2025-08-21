@@ -10,7 +10,7 @@ import AVFoundation
 
 struct JokerCompactView: View {
     @ObservedObject var game: GameModel
-    @State private var showJokerShop = false
+    @Binding var isJokerShopPresented: Bool
     @State private var selectedJokerType: JokerType?
     
     var body: some View {
@@ -24,12 +24,12 @@ struct JokerCompactView: View {
                     },
                     onLongPress: {
                         selectedJokerType = jokerType
-                        showJokerShop = true
+                        isJokerShopPresented = true
                     }
                 )
             }
         }
-        .sheet(isPresented: $showJokerShop) {
+        .sheet(isPresented: $isJokerShopPresented) {
             JokerShopView(
                 jokerManager: game.jokerManager
             )
@@ -39,7 +39,7 @@ struct JokerCompactView: View {
     private func handleJokerTap(_ type: JokerType) {
         if game.jokerManager.jokers.count(for: type) == 0 {
             selectedJokerType = type
-            showJokerShop = true
+            isJokerShopPresented = true
             return
         }
         

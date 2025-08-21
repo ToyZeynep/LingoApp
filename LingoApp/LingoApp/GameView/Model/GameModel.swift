@@ -26,6 +26,7 @@ class GameModel: ObservableObject {
     @Published var totalCorrectGuesses = UserDefaults.standard.integer(forKey: "TotalCorrectGuesses")
     @Published var showJokerRewardAlert = false
     @Published var rewardedJokerType: JokerType? = nil
+    @Published var isTimerPaused: Bool = false
     
     var maxGuesses = Int.max
     var visibleGuesses = 5
@@ -50,6 +51,18 @@ class GameModel: ObservableObject {
         startNewGame()
     }
     
+    // MARK: - Language Detection
+    
+    /// Kullanıcının seçtiği dili döndürür
+    private var selectedLanguage: String {
+        return UserDefaults.standard.string(forKey: "selectedLanguage") ?? "tr"
+    }
+    
+    /// Seçili dile göre uygun dil kodunu döndürür
+    private var isEnglishMode: Bool {
+        return selectedLanguage == "en"
+    }
+    
     var displayedGuessCount: Int {
         return visibleGuesses
     }
@@ -66,6 +79,16 @@ class GameModel: ObservableObject {
             saveSoundSettings()
         }
     }
+    
+    func pauseTimer() {
+            isTimerPaused = true
+            print("⏸️ Timer paused")
+        }
+        
+        func resumeTimer() {
+            isTimerPaused = false
+            print("▶️ Timer resumed")
+        }
     
     private func saveSoundSettings() {
         UserDefaults.standard.set(soundEnabled, forKey: "SoundEnabled")
@@ -89,6 +112,17 @@ class GameModel: ObservableObject {
         
         playSound(named: "gameStart")
         
+        // Dil seçimine göre kelime çek
+        if isEnglishMode {
+            fetchEnglishWord()
+        } else {
+            fetchTurkishWord()
+        }
+    }
+    
+    // MARK: - Language-Aware Word Fetching
+    
+    private func fetchTurkishWord() {
         wordUploader.fetchRandomWordWithMeaning(length: wordLength) { [weak self] wordData in
             DispatchQueue.main.async {
                 guard let self = self else { return }
@@ -96,14 +130,15 @@ class GameModel: ObservableObject {
                 if let wordData = wordData {
                     self.targetWord = wordData.word.turkishUppercased
                     self.currentWordMeaning = wordData.meaning
-                    print("🎯 Yeni kelime: \(self.targetWord) - Anlam: \(self.currentWordMeaning)")
+                    print("🇹🇷 Türkçe kelime: \(self.targetWord) - Anlam: \(self.currentWordMeaning)")
                     self.isLoadingWord = false
                     self.startTimer()
                 } else {
-                    let fallbackData = self.getFallbackWordWithMeaning()
+                    // Türkçe fallback
+                    let fallbackData = self.getFallbackTurkishWordWithMeaning()
                     self.targetWord = fallbackData.word
                     self.currentWordMeaning = fallbackData.meaning
-                    print("⚠️ Fallback kelime kullanıldı: \(self.targetWord)")
+                    print("⚠️ Türkçe fallback kelime kullanıldı: \(self.targetWord)")
                     self.isLoadingWord = false
                     self.startTimer()
                 }
@@ -111,14 +146,40 @@ class GameModel: ObservableObject {
         }
     }
     
-    private func getFallbackWordWithMeaning() -> (word: String, meaning: String) {
+    private func fetchEnglishWord() {
+        wordUploader.fetchRandomEnglishWordWithMeaning(length: wordLength) { [weak self] wordData in
+            DispatchQueue.main.async {
+                guard let self = self else { return }
+                
+                if let wordData = wordData {
+                    self.targetWord = wordData.word.uppercased()
+                    self.currentWordMeaning = wordData.meaning
+                    print("🇺🇸 English word: \(self.targetWord) - Meaning: \(self.currentWordMeaning)")
+                    self.isLoadingWord = false
+                    self.startTimer()
+                } else {
+                    // İngilizce fallback
+                    let fallbackData = self.getFallbackEnglishWordWithMeaning()
+                    self.targetWord = fallbackData.word
+                    self.currentWordMeaning = fallbackData.meaning
+                    print("⚠️ English fallback word used: \(self.targetWord)")
+                    self.isLoadingWord = false
+                    self.startTimer()
+                }
+            }
+        }
+    }
+    
+    // MARK: - Fallback Words
+    
+    private func getFallbackTurkishWordWithMeaning() -> (word: String, meaning: String) {
         let fallbackWordsWithMeanings: [Int: [(String, String)]] = [
             4: [
                 ("KEDI", "Evde besilen, miyavlayan dört ayaklı hayvan"),
                 ("MASA", "Üzerine yemek yenilen, çalışılan düz yüzey"),
                 ("ELMA", "Kırmızı veya yeşil renkli, tatlı meyve"),
                 ("DAMA", "Tahtada oynanan strateji oyunu"),
-                ("YAZZ", "Sıcak mevsim, tatil zamanı")
+                ("YAŞZ", "Sıcak mevsim, tatil zamanı")
             ],
             5: [
                 ("ELMAS", "Çok değerli, parlak taş"),
@@ -131,13 +192,43 @@ class GameModel: ObservableObject {
                 ("DOKTOR", "Hastaları tedavi eden kişi"),
                 ("OKUL", "Eğitim verilen yer"),
                 ("BİLGİ", "Öğrenilen, bilinen şeyler"),
-                ("ARKADAŞ", "Sevdiğimiz, güvendiğimiz kişi"),
+                ("ARKADŞ", "Sevdiğimiz, güvendiğimiz kişi"),
                 ("GÜNEŞ", "Gündüz ışık veren yıldız")
             ]
         ]
         
         let wordsForLength = fallbackWordsWithMeanings[wordLength] ?? [("ERROR", "Hata")]
         let selected = wordsForLength.randomElement() ?? ("ERROR", "Hata")
+        return selected
+    }
+    
+    private func getFallbackEnglishWordWithMeaning() -> (word: String, meaning: String) {
+        let fallbackWordsWithMeanings: [Int: [(String, String)]] = [
+            4: [
+                ("LOVE", "A strong feeling of affection"),
+                ("TIME", "The indefinite continued progress of existence"),
+                ("BOOK", "A written work consisting of pages"),
+                ("DOOR", "A hinged barrier for entrance"),
+                ("WORK", "Activity involving effort or exertion")
+            ],
+            5: [
+                ("HOUSE", "A building for human habitation"),
+                ("WATER", "A transparent liquid essential for life"),
+                ("LIGHT", "Natural illumination from the sun"),
+                ("MUSIC", "Vocal or instrumental sounds combined"),
+                ("SMILE", "A pleased, kind, or amused facial expression")
+            ],
+            6: [
+                ("FRIEND", "A person you know well and like"),
+                ("FAMILY", "A group of related people"),
+                ("SCHOOL", "An institution for learning"),
+                ("ANIMAL", "A living organism that feeds on matter"),
+                ("NATURE", "The phenomena of the physical world")
+            ]
+        ]
+        
+        let wordsForLength = fallbackWordsWithMeanings[wordLength] ?? [("ERROR", "Error")]
+        let selected = wordsForLength.randomElement() ?? ("ERROR", "Error")
         return selected
     }
     
@@ -172,7 +263,9 @@ class GameModel: ObservableObject {
     private func buildCompleteGuess() -> String {
         var completeGuess = ""
         var currentGuessIndex = 0
-        let currentGuessArray = Array(currentGuess.turkishUppercased)
+        let currentGuessArray = isEnglishMode ?
+            Array(currentGuess.uppercased()) :
+            Array(currentGuess.turkishUppercased)
         
         for position in 0..<wordLength {
             if revealedPositions.contains(position) {
@@ -183,7 +276,9 @@ class GameModel: ObservableObject {
                     completeGuess += String(currentGuessArray[currentGuessIndex])
                     currentGuessIndex += 1
                 } else {
-                    return currentGuess.turkishUppercased
+                    return isEnglishMode ?
+                        currentGuess.uppercased() :
+                        currentGuess.turkishUppercased
                 }
             }
         }
@@ -192,18 +287,32 @@ class GameModel: ObservableObject {
     }
     
     private func validateWordAndProcess(_ guess: String) {
-        wordUploader.isValidWord(guess) { [weak self] (isValid: Bool) in
-            DispatchQueue.main.async {
-                guard let self = self else { return }
-                
-                if isValid {
-                    self.processNormalGuess(guess)
-                } else {
-                    self.currentGuess = ""
-                    self.showInvalidWordAlert = true
-                    self.playSound(named: "invalid")
+        if isEnglishMode {
+            wordUploader.isValidEnglishWord(guess) { [weak self] (isValid: Bool) in
+                DispatchQueue.main.async {
+                    self?.handleValidationResult(isValid: isValid, guess: guess)
                 }
             }
+        } else {
+            wordUploader.isValidWord(guess) { [weak self] (isValid: Bool) in
+                DispatchQueue.main.async {
+                    self?.handleValidationResult(isValid: isValid, guess: guess)
+                }
+            }
+        }
+    }
+    
+    private func handleValidationResult(isValid: Bool, guess: String) {
+        if isValid {
+            processNormalGuess(guess)
+        } else {
+            currentGuess = ""
+            showInvalidWordAlert = true
+            playSound(named: "invalid")
+            
+            // Dil bazlı log
+            let language = isEnglishMode ? "English" : "Turkish"
+            print("❌ Invalid \(language) word: \(guess)")
         }
     }
     
@@ -355,7 +464,10 @@ class GameModel: ObservableObject {
                 }
             }
             
-            let currentGuessArray = Array(currentGuess.turkishUppercased)
+            let currentGuessArray = isEnglishMode ?
+                Array(currentGuess.uppercased()) :
+                Array(currentGuess.turkishUppercased)
+            
             if currentGuessIndex < currentGuessArray.count {
                 return currentGuessArray[currentGuessIndex]
             }
@@ -402,6 +514,8 @@ class GameModel: ObservableObject {
             guard let self = self else { return }
             
             DispatchQueue.main.async {
+                guard !self.isTimerPaused else { return }
+                
                 if self.timeRemaining > 0 && self.gameState == .playing {
                     self.timeRemaining -= 1
                     
@@ -430,6 +544,19 @@ class GameModel: ObservableObject {
     
     func addExtraTime(_ seconds: TimeInterval = 30) {
         timeRemaining += seconds
+    }
+    
+    // MARK: - Language Status Methods
+    
+    /// Mevcut oyun dilini döndürür
+    func getCurrentLanguageDisplay() -> String {
+        return isEnglishMode ? "🇺🇸 English" : "🇹🇷 Türkçe"
+    }
+    
+    /// Dil değişikliği olduğunda oyunu yeniden başlat
+    func onLanguageChanged() {
+        print("🌍 Oyun dili değişti: \(getCurrentLanguageDisplay())")
+        startNewGame() // Yeni dilde kelime ile oyunu yeniden başlat
     }
     
     private func playSound(named soundName: String) {

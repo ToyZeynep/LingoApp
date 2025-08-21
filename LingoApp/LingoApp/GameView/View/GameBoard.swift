@@ -65,8 +65,6 @@ struct GameBoard: View {
                 }
                 .padding(.horizontal, 4)
             }
-            
-            JokerCompactView(game: game)
         }
         .padding(20)
         .background(

@@ -23,6 +23,12 @@
     "⚠️" : {
 
     },
+    "🇹🇷 Türkçe" : {
+
+    },
+    "🇺🇸 English" : {
+
+    },
     "🎯" : {
 
     },
@@ -452,6 +458,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "You Won a Joker! 🎁"
+          }
+        }
+      }
+    },
+    "JOKER MAĞAZASI" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JOKER STORE"
           }
         }
       }
