@@ -9,19 +9,30 @@ import SwiftUI
 import Firebase
 import GoogleMobileAds
 
-@main
-struct LingoAppApp: App {
+class AppDelegate: UIResponder, UIApplicationDelegate {
     
-    init() {
+    var window: UIWindow?
+
+    func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+    ) -> Bool {
+        
+        FirebaseApp.configure()
         MobileAds.shared.start { status in
             print("AdMob başlatıldı. Status: \(status)")
         }
-        FirebaseApp.configure()
-        
-    #if DEBUG
+#if DEBUG
         Analytics.setAnalyticsCollectionEnabled(true)
-        #endif
+#endif
+        print("AppDelegate: didFinishLaunchingWithOptions tamamlandı")
+        return true
     }
+}
+
+@main
+struct LingoAppApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     var body: some Scene {
         WindowGroup {

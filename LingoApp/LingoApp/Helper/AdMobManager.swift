@@ -51,7 +51,7 @@ class AdMobManager: NSObject, ObservableObject {
         let request = Request()
         
         // Yeni API kullanımı
-        RewardedAd.load(with: testRewardedAdUnitID, request: request) { [weak self] ad, error in
+        RewardedAd.load(with: rewardedAdUnitID, request: request) { [weak self] ad, error in
             DispatchQueue.main.async {
                 self?.isLoading = false
                 
