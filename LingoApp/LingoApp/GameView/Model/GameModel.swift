@@ -269,8 +269,9 @@ class GameModel: ObservableObject {
         
         for position in 0..<wordLength {
             if revealedPositions.contains(position) {
-                let targetIndex = targetWord.index(targetWord.startIndex, offsetBy: position)
-                completeGuess += String(targetWord[targetIndex])
+                if let character = targetWord.safeSubstring(at: position) {
+                    completeGuess += String(character)
+                }
             } else {
                 if currentGuessIndex < currentGuessArray.count {
                     completeGuess += String(currentGuessArray[currentGuessIndex])
@@ -290,7 +291,7 @@ class GameModel: ObservableObject {
         if isEnglishMode {
             DispatchQueue.global().async { [weak self] in
                 guard let self = self else { return }
-                let isValid = self.wordUploader.isValidEnglishWord(guess)
+                let isValid = self.wordUploader.isValidEnglishWord(guess.capitalized)
                 DispatchQueue.main.async {
                     self.handleValidationResult(isValid: isValid, guess: guess)
                 }
@@ -298,7 +299,7 @@ class GameModel: ObservableObject {
         } else {
             DispatchQueue.global().async { [weak self] in
                 guard let self = self else { return }
-                let isValid = self.wordUploader.isValidTurkishWord(guess)
+                let isValid = self.wordUploader.isValidTurkishWord(guess.turkishLowercased)
                 DispatchQueue.main.async {
                     self.handleValidationResult(isValid: isValid, guess: guess)
                 }

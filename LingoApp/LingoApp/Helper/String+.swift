@@ -46,3 +46,10 @@ extension String {
     }
 }
 
+extension String {
+    func safeSubstring(at offset: Int) -> Character? {
+        guard offset >= 0 && offset < count else { return nil }
+        return self[index(startIndex, offsetBy: offset)]
+    }
+}
+
