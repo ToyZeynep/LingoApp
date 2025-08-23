@@ -40,6 +40,7 @@ struct KeyboardView: View {
                             Button(action: { game.deleteLetter() }) {
                                 Image(systemName: "delete.left.fill")
                                     .font(.system(size: 18, weight: .medium))
+                                    .frame(width: keyWidth(for: rows[rowIndex].count), height: 50, alignment: .center)
                             }
                             .keyboardButtonStyle(
                                 width: keyWidth(for: rows[rowIndex].count),
@@ -54,6 +55,7 @@ struct KeyboardView: View {
                             Button(action: { game.makeGuess() }) {
                                 Image(systemName: "return")
                                     .font(.system(size: 20, weight: .bold))
+                                    .frame(width: keyWidth(for: rows[rowIndex].count), height: 50, alignment: .center)
                             }
                             .keyboardButtonStyle(
                                 width: keyWidth(for: rows[rowIndex].count),
@@ -68,6 +70,7 @@ struct KeyboardView: View {
                             let isRemoved = game.jokerManager.removedLetters.contains(Character(key))
                             Button(action: { if !isRemoved { game.addLetter(key) } }) {
                                 Text(key)
+                                    .frame(width: keyWidth(for: rows[rowIndex].count), height: 50, alignment: .center)
                             }
                             .keyboardButtonStyle(
                                 width: keyWidth(for: rows[rowIndex].count),
